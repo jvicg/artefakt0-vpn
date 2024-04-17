@@ -1,0 +1,5 @@
+# file: /etc/hosts
+%{ for instance in instances ~}
+${instance.private_ip} ${instance.tags.Name}
+%{ endfor ~}
+
