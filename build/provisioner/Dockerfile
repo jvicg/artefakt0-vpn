@@ -1,20 +1,19 @@
 # syntax=docker/dockerfile:1.4
-FROM alpine:3.8
+FROM alpine:latest
 
-ENV ANSIBLE_VERSION 2.7.4
-ENV ANSIBLE_LINT 3.5.1
-ENV DOCKER_PY_VERSION 1.10.6
+WORKDIR /app
 
-RUN apk add --no-cache --update python3 openssl ca-certificates bash git sudo zip sshpass openssh-client rsync \ 
-    && apk --update add --virtual build-dependencies python3-dev libffi-dev openssl-dev build-base \
-    && pip3 install --upgrade pip cffi \
-    && pip3 install ansible==$ANSIBLE_VERSION ansible-lint==$ANSIBLE_LINT docker-py==$DOCKER_PY_VERSION \
-    && pip3 install --upgrade pycrypto pywinrm \
-    && apk del build-dependencies
+RUN apk add --no-cache --update python3 py3-pip openssl ca-certificates bash git sudo zip sshpass openssh-client rsync \ 
+    && apk add --update --no-cache --virtual build-dependencies python3-dev libffi-dev openssl-dev build-base 
 
-RUN adduser -S ansible 
-USER ansible
+RUN python3 -m venv ./venv \
+    && . ./venv/bin/activate \
+    && pip install --upgrade pip cffi \
+    && pip install ansible ansible-lint docker-py \
+    && pip install --upgrade pycrypto pywinrm
 
-WORKDIR /etc/ansible
+RUN apk del build-dependencies
 
-CMD [ "ansible-playbook", "--version" ]
+COPY . .
+
+CMD [ "./venv/bin/ansible-playbook", "site.yml" ]
