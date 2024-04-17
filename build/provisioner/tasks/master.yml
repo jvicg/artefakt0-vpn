@@ -1,0 +1,7 @@
+# file: master.yml
+- name: Install and configure Kubernetes on Master Node
+  hosts: k8s_master
+  become: True
+  tasks:
+    - name: Install vsftpd
+      apt: name=vsftpd update_cache=yes

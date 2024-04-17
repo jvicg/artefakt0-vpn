@@ -1,0 +1,41 @@
+# file: common.yml
+# contents the common steps to provision both master and workers
+- name: Provision for both master and workers
+  hosts: servers
+  become: True
+  tasks:
+    - name: Update /etc/hosts file
+      copy:
+        src: ./hosts
+        dest: /etc/hosts
+
+    - name: Update and upgrade the system
+      apt:
+        update_cache: yes
+        upgrade: full
+
+    - name: Install previous dependencies
+      apt:
+        pkg:
+        - curl
+        - wget
+        - apt-transport-https
+
+    - name: Add an apt signing key for Kubernetes
+      apt_key:
+        url: https://pkgs.k8s.io/core:/stable:/v1.28/deb/Release.key
+        state: present
+
+    - name: Adding Kubernetes apt repository 
+      apt_repository:
+        repo: deb https://pkgs.k8s.io/core:/stable:/v1.28/deb/ /
+        state: present
+        filename: kubernetes.list
+
+    - name: Install Kubernetes software
+      apt:
+        update_cache: yes
+        pkg:
+          - kubelet
+          - kubeadm
+          - kubectl
