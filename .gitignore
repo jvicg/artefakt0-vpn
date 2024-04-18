@@ -1,7 +1,7 @@
+.*
 key/
 *.key
+*.old
 terraform*
-.terraform*
 build/provisioner/hosts
 build/provisioner/inventory
-build/provisioner/template.yml

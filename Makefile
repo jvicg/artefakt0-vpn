@@ -1,11 +1,10 @@
-# TODO: add error control
+# file: Makefile
 deploy:
 	terraform apply -auto-approve
 
 provision:
 	docker build -t provisioner ./build/provisioner
 	docker run --rm provisioner
-	docker image rm provisioner
 
 wait:
 	sleep 15
