@@ -3,8 +3,8 @@ FROM alpine:latest
 
 WORKDIR /ansible
 
-RUN apk add --no-cache --update python3 py3-pip openssl ca-certificates bash git sudo zip sshpass openssh-client rsync \ 
-    && apk add --update --no-cache --virtual build-dependencies python3-dev libffi-dev openssl-dev build-base 
+RUN apk add --update --no-cache python3 py3-pip openssl ca-certificates bash git sudo zip sshpass openssh-client rsync \ 
+    && apk add --no-cache --virtual build-dependencies python3-dev libffi-dev openssl-dev build-base 
 
 RUN python3 -m venv ./venv \
     && . ./venv/bin/activate \

@@ -1,10 +1,12 @@
 # file: common.yml
-# This task contents the common steps to provision both k8s master and workers
+# Contents the common steps to provision both k8s master and workers
+# Including the installation of kubernetes and dependencies, disabling swap, enabling needed kernel modules, etc.
+
 - name: Provision for both master and workers
   hosts: 
     - master
     - slaves
-  become: True
+  become: true
   tasks:
     - name: Update /etc/hosts file
       copy:
@@ -23,7 +25,7 @@
         - wget
         - apt-transport-https
 
-    - name: Add apt signing key for Kubernetes repo
+    - name: Add apt signing key for Kubernetes apt repository
       apt_key:
         url: https://pkgs.k8s.io/core:/stable:/v1.28/deb/Release.key
         state: present

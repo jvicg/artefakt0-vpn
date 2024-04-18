@@ -1,2 +1,4 @@
 # file: site.yml
+# This playbook will just call the rest of the playbooks
+
 - import_playbook: common.yml
