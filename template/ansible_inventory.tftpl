@@ -1,4 +1,9 @@
-[servers]
-%{ for instance in instances ~}
+[master]
+${instances[0].tags.Name} ansible_host=${instances[0].public_dns}
+
+[slaves]
+%{ for i, instance in instances ~}
+%{ if i != 0 }
 ${instance.tags.Name} ansible_host=${instance.public_dns}
+%{ endif }
 %{ endfor ~}
