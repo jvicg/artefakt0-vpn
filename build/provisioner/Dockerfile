@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1.4
 FROM alpine:latest
 
-WORKDIR /app
+WORKDIR /ansible
 
 RUN apk add --no-cache --update python3 py3-pip openssl ca-certificates bash git sudo zip sshpass openssh-client rsync \ 
     && apk add --update --no-cache --virtual build-dependencies python3-dev libffi-dev openssl-dev build-base 
@@ -16,4 +16,4 @@ RUN apk del build-dependencies
 
 COPY . .
 
-CMD [ "./venv/bin/ansible-playbook", "site.yml" ]
+CMD [ "./venv/bin/ansible-playbook", "tasks/site.yml" ]

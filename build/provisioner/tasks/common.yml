@@ -1,12 +1,14 @@
 # file: common.yml
-# contents the common steps to provision both master and workers
+# This task contents the common steps to provision both k8s master and workers
 - name: Provision for both master and workers
-  hosts: servers
+  hosts: 
+    - master
+    - slaves
   become: True
   tasks:
     - name: Update /etc/hosts file
       copy:
-        src: ./hosts
+        src: ../hosts
         dest: /etc/hosts
 
     - name: Update and upgrade the system
@@ -21,12 +23,12 @@
         - wget
         - apt-transport-https
 
-    - name: Add an apt signing key for Kubernetes
+    - name: Add apt signing key for Kubernetes repo
       apt_key:
         url: https://pkgs.k8s.io/core:/stable:/v1.28/deb/Release.key
         state: present
 
-    - name: Adding Kubernetes apt repository 
+    - name: Add Kubernetes apt repository 
       apt_repository:
         repo: deb https://pkgs.k8s.io/core:/stable:/v1.28/deb/ /
         state: present
@@ -39,3 +41,12 @@
           - kubelet
           - kubeadm
           - kubectl
+    
+    - name: Mark Kubernetes packages as hold to ensure stability
+      ansible.builtin.dpkg_selections:
+        name: "{{ item.name }}"
+        selection: "{{ item.selection }}"
+      loop:
+        - { name: "kubeadm", selection: "hold" }
+        - { name: "kubelet", selection: "hold" }
+        - { name: "kubectl", selection: "hold" }
