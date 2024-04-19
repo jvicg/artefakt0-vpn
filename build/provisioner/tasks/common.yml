@@ -23,9 +23,12 @@
         pkg:
         - curl
         - wget
+        - gnupg2
+        - ca-certificates
         - apt-transport-https
+        - software-properties-common
 
-    - name: Add apt signing key for Kubernetes apt repository
+    - name: Add signing key for Kubernetes apt repository
       apt_key:
         url: https://pkgs.k8s.io/core:/stable:/v1.28/deb/Release.key
         state: present
@@ -46,9 +49,61 @@
     
     - name: Mark Kubernetes packages as hold to ensure stability
       ansible.builtin.dpkg_selections:
-        name: "{{ item.name }}"
-        selection: "{{ item.selection }}"
+        name: '{{ item.name }}'
+        selection: '{{ item.selection }}'
       loop:
-        - { name: "kubeadm", selection: "hold" }
-        - { name: "kubelet", selection: "hold" }
-        - { name: "kubectl", selection: "hold" }
+        - { name: 'kubeadm', selection: 'hold' }
+        - { name: 'kubelet', selection: 'hold' }
+        - { name: 'kubectl', selection: 'hold' }
+    
+    - name: Disable swap (if enabled)
+      ansible.builtin.replace:
+        path: /etc/fstab
+        regexp: '^(.*swap.*)$'
+        replace: '#\1'
+
+    - name: Activate needed kernel modules
+      community.general.modprobe:
+        name: '{{ item }}'
+        persistent: present
+      with_items:
+        - 'overlay'
+        - 'br_netfilter'
+    
+    - name: Activate needed features on kubernetes.conf 
+      ansible.builtin.lineinfile:
+        path: /etc/sysctl.d/kubernetes.conf
+        line: '{{ item }}'
+        create: true
+      with_items:
+        - 'net.bridge.bridge-nf-call-ip6tables=1'
+        - 'net.bridge.bridge-nf-call-iptables=1'
+        - 'net.ipv4.ip_forward=1'
+    
+    - name: Reload sysctl
+      ansible.builtin.command:
+        cmd: sysctl --system
+    
+    - name: Add signing key for Docker apt repository
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+        
+    # Only working on Ubuntu Focal
+    - name: Add Docker apt repository 
+      apt_repository:
+        repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable 
+        state: present
+    
+    - name: Install containerd
+      apt:
+        name: containerd.io
+        update_cache: yes
+    
+    - name: Enable containerd service
+      service:
+        name: containerd
+        state: restarted
+        enabled: yes
+        daemon_reload: yes
+    
