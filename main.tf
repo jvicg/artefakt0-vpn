@@ -15,13 +15,15 @@ locals {
   vars = {
     ami              = "ami-0cd59ecaf368e5ccf"  # Ubuntu 20.04
     instance_type    = "t3.small"               # 2vCPU | 2GiB Mem
+    # instance_type    = "t3.medium"            # 2vCPU | 4GiB Mem
     instances_amount = "3"                      # Number of instances to be deployed
     region           = "us-east-1"              
   }
 }
 
+# Default VPC CIDR block (e.g: 172.31.10.0/16)
 data "aws_vpc" "default" {
-  default = true  # Default VPC CIDR block (e.g: 172.31.10.0/16)
+  default = true  
 }
 
 # Set AWS region and credentials
@@ -39,7 +41,7 @@ resource "aws_instance" "main" {
   vpc_security_group_ids = [aws_security_group.allow_ssh_k8s.id]
   associate_public_ip_address = true
 
-  tags = {  # The first instance to be deployed will be the k8s master
+  tags = {  # The first instance to be deployed will be the master node
     Name = "${count.index == 0 ? "k8s_master" : "k8s_slave_${count.index - 1}"}"
   }
 
