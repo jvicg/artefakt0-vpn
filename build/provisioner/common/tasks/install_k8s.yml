@@ -1,4 +1,4 @@
-# tasks/k8s_install.yml
+# common/tasks/k8s_install.yml
 # Installation and configuration of Kubernetes
 
 - name: Add signing key for Kubernetes apt repository

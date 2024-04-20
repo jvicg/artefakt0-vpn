@@ -1,4 +1,4 @@
-# file: site.yml
+# site.yml
 # Main entrypoint
 # This playbook will execute the roles on the hosts
 

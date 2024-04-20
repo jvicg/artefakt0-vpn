@@ -1,4 +1,6 @@
-# file: Makefile
+# Makefile
+# Contents the needed shell commands to automatically deploy and configure the VPN cluster
+
 deploy:
 	terraform apply -auto-approve
 

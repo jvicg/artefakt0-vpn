@@ -1,4 +1,5 @@
-# file: main.tf
+# main.tf
+# File responsible of the deployment of the AWS Instances
 
 # Providers installation
 terraform {

@@ -1,4 +1,4 @@
-# tasks/update_hosts.yml
+# common/tasks/update_hosts.yml
 # Replace the /etc/hosts file
 
 - name: Update /etc/hosts file

@@ -1,4 +1,4 @@
-# vars/main.yml
+# common/vars/main.yml
 # Contains variables used on the role
 
 docker:
@@ -17,6 +17,7 @@ dependencies:
     - ca-certificates
     - apt-transport-https
     - software-properties-common
-  mod:  # Kernel modules needed by kubernetes
+
+  mod:  # Kernel modules needed by Kubernetes
     - 'overlay'
     - 'br_netfilter'

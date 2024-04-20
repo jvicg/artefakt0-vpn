@@ -1,4 +1,4 @@
-# tasks/pre_set.yml
+# common/tasks/pre_set.yml
 # Upgrade the system and install dependencies
 
 - name: Update and upgrade the system
