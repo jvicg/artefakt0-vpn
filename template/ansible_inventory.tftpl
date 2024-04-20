@@ -3,7 +3,7 @@
 [master]
 ${instances[0].tags.Name} ansible_host=${instances[0].public_dns}
 
-[slaves]
+[workers]
 %{ for i, instance in instances ~}
 %{ if i != 0 }
 ${instance.tags.Name} ansible_host=${instance.public_dns}

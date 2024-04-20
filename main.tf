@@ -15,7 +15,6 @@ locals {
   vars = {
     ami              = "ami-0cd59ecaf368e5ccf"  # Ubuntu 20.04
     instance_type    = "t3.small"               # 2vCPU | 2GiB Mem
-    # instance_type    = "t3.medium"            # 2vCPU | 4GiB Mem
     instances_amount = "3"                      # Number of instances to be deployed
     region           = "us-east-1"              
   }

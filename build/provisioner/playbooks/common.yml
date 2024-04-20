@@ -1,52 +1,54 @@
 # file: common.yml
 # Contents the common steps to provision both k8s master and workers
 # Including the installation of kubernetes and dependencies, disabling swap, enabling needed kernel modules, etc.
+# TODO: make it work on all versions of Ubuntu and Debian
 
 - name: Provision for both master and workers
-  hosts: 
+  hosts:
     - master
-    - slaves
+    - workers
   become: true
   tasks:
     - name: Update /etc/hosts file
-      copy:
+      ansible.builtin.copy:
         src: ../hosts
         dest: /etc/hosts
+        mode: '0644'
 
     - name: Update and upgrade the system
-      apt:
-        update_cache: yes
+      ansible.builtin.apt:
+        update_cache: true
         upgrade: full
 
     - name: Install previous dependencies
-      apt:
+      ansible.builtin.apt:
         pkg:
-        - curl
-        - wget
-        - gnupg2
-        - ca-certificates
-        - apt-transport-https
-        - software-properties-common
+          - curl
+          - wget
+          - gnupg2
+          - ca-certificates
+          - apt-transport-https
+          - software-properties-common
 
     - name: Add signing key for Kubernetes apt repository
-      apt_key:
+      ansible.builtin.apt_key:
         url: https://pkgs.k8s.io/core:/stable:/v1.28/deb/Release.key
         state: present
 
-    - name: Add Kubernetes apt repository 
-      apt_repository:
+    - name: Add Kubernetes apt repository
+      ansible.builtin.apt_repository:
         repo: deb https://pkgs.k8s.io/core:/stable:/v1.28/deb/ /
         state: present
         filename: kubernetes.list
 
     - name: Install Kubernetes software
-      apt:
-        update_cache: yes
+      ansible.builtin.apt:
+        update_cache: true
         pkg:
           - kubelet
           - kubeadm
           - kubectl
-    
+
     - name: Mark Kubernetes packages as hold to ensure stability
       ansible.builtin.dpkg_selections:
         name: '{{ item.name }}'
@@ -55,7 +57,7 @@
         - { name: 'kubeadm', selection: 'hold' }
         - { name: 'kubelet', selection: 'hold' }
         - { name: 'kubectl', selection: 'hold' }
-    
+
     - name: Disable swap (if enabled)
       ansible.builtin.replace:
         path: /etc/fstab
@@ -69,41 +71,41 @@
       with_items:
         - 'overlay'
         - 'br_netfilter'
-    
-    - name: Activate needed features on kubernetes.conf 
+
+    - name: Activate needed features on kubernetes.conf
       ansible.builtin.lineinfile:
         path: /etc/sysctl.d/kubernetes.conf
         line: '{{ item }}'
         create: true
+        mode: '0644'
       with_items:
         - 'net.bridge.bridge-nf-call-ip6tables=1'
         - 'net.bridge.bridge-nf-call-iptables=1'
         - 'net.ipv4.ip_forward=1'
-    
+
     - name: Reload sysctl
       ansible.builtin.command:
         cmd: sysctl --system
-    
+      changed_when: false
+
     - name: Add signing key for Docker apt repository
-      apt_key:
+      ansible.builtin.apt_key:
         url: https://download.docker.com/linux/ubuntu/gpg
         state: present
-        
-    # Only working on Ubuntu Focal
-    - name: Add Docker apt repository 
-      apt_repository:
-        repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable 
+
+    - name: Add Docker apt repository
+      ansible.builtin.apt_repository:
+        repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable
         state: present
-    
+
     - name: Install containerd
-      apt:
+      ansible.builtin.apt:
         name: containerd.io
-        update_cache: yes
-    
+        update_cache: true
+
     - name: Enable containerd service
-      service:
+      ansible.builtin.service:
         name: containerd
         state: restarted
-        enabled: yes
-        daemon_reload: yes
-    
+        enabled: true
+        daemon_reload: true
