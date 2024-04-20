@@ -104,5 +104,5 @@ resource "local_file" "hosts" {  # /etc/hosts (for the nodes)
   content = templatefile("${path.module}/template/k8s_hosts.tftpl", {
     instances = aws_instance.main
   })
-  filename = "${path.module}/build/provisioner/hosts"
+  filename = "${path.module}/build/provisioner/common/files/hosts"
 }

@@ -1,0 +1,8 @@
+# tasks/update_hosts.yml
+# Replace the /etc/hosts file
+
+- name: Update /etc/hosts file
+  ansible.builtin.copy:
+    src: hosts
+    dest: /etc/hosts
+    mode: '0644'

@@ -1,0 +1,17 @@
+# tasks/pre_set.yml
+# Upgrade the system and install dependencies
+
+- name: Update and upgrade the system
+  ansible.builtin.apt:
+    update_cache: true
+    upgrade: full
+
+- name: Install previous dependencies
+  ansible.builtin.apt:
+    pkg:
+      - curl
+      - wget
+      - gnupg2
+      - ca-certificates
+      - apt-transport-https
+      - software-properties-common

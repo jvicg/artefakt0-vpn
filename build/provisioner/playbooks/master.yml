@@ -1,8 +1,0 @@
-# file: master.yml
-# Include the configuration that are exclusive to the master node
-
-- name: Install and configure Kubernetes on Master Node
-  hosts: k8s_master
-  become: true
-  tasks:
-    - name: ""

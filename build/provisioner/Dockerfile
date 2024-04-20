@@ -9,11 +9,11 @@ RUN apk add --update --no-cache python3 py3-pip openssl ca-certificates bash git
 RUN python3 -m venv ./venv \
     && . ./venv/bin/activate \
     && pip install --upgrade pip cffi \
-    && pip install ansible ansible-lint docker-py \
+    && pip install ansible docker-py \
     && pip install --upgrade pycrypto pywinrm
 
 RUN apk del build-dependencies
 
 COPY . .
 
-CMD [ "./venv/bin/ansible-playbook", "tasks/site.yml" ]
+CMD [ "./venv/bin/ansible-playbook", "site.yml" ]
