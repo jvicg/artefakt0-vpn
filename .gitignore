@@ -5,3 +5,4 @@ key/
 terraform*
 build/provisioner/hosts
 build/provisioner/inventory
+build/provisioner/common/files
