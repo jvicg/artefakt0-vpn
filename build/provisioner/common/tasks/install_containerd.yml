@@ -3,12 +3,12 @@
 
 - name: Add signing key for Docker apt repository
   ansible.builtin.apt_key:
-    url: https://download.docker.com/linux/ubuntu/gpg
+    url: '{{ docker.key }}'
     state: present
 
 - name: Add Docker apt repository
   ansible.builtin.apt_repository:
-    repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable
+    repo: '{{ docker.repo }}'
     state: present
 
 - name: Install containerd

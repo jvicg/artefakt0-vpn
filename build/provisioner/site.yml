@@ -1,0 +1,11 @@
+# file: site.yml
+# Main entrypoint
+# This playbook will execute the roles on the hosts
+
+- name: Run common provisioning on master and workers
+  hosts:
+    - master
+    - workers
+  become: true
+  roles:
+    - common

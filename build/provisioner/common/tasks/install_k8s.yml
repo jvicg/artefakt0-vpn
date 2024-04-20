@@ -3,12 +3,12 @@
 
 - name: Add signing key for Kubernetes apt repository
   ansible.builtin.apt_key:
-    url: https://pkgs.k8s.io/core:/stable:/v1.28/deb/Release.key
+    url: '{{ k8s.key }}'
     state: present
 
 - name: Add Kubernetes apt repository
   ansible.builtin.apt_repository:
-    repo: deb https://pkgs.k8s.io/core:/stable:/v1.28/deb/ /
+    repo: '{{ k8s.repo }}'
     state: present
     filename: kubernetes.list
 
@@ -43,8 +43,7 @@
     name: '{{ item }}'
     persistent: present
   with_items:
-    - 'overlay'
-    - 'br_netfilter'
+    '{{ dependencies.mod }}'
 
 - name: Activate needed features on kubernetes.conf
   ansible.builtin.lineinfile:
