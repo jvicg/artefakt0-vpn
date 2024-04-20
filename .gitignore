@@ -1,8 +1,9 @@
 .*
-key/
 *.key
+*.pub
 *.old
 terraform*
 build/provisioner/hosts
 build/provisioner/inventory
+build/provisioner/provisioner
 build/provisioner/common/files
