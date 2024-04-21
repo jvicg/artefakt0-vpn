@@ -1,0 +1,12 @@
+# common/tasks/main.yml
+# Contents the common steps to provision both k8s master and workers
+# Including the installation of kubernetes and dependencies, disabling swap, enabling needed kernel modules, etc.
+
+- name: Upgrade the system and install dependencies
+  ansible.builtin.import_tasks: pre_set.yml
+
+- name: Install containerd
+  ansible.builtin.import_tasks: install_containerd.yml
+
+- name: Install and configure Kubernetes
+  ansible.builtin.import_tasks: install_k8s.yml

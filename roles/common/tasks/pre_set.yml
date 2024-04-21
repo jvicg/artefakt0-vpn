@@ -1,0 +1,17 @@
+# common/tasks/pre_set.yml
+# Upgrade the system and install dependencies
+
+- name: Update and upgrade the system
+  ansible.builtin.apt:
+    update_cache: true
+    upgrade: full
+
+- name: Install previous packages dependencies
+  ansible.builtin.apt:
+    pkg:
+      '{{ common_dependencies.pkg }}'
+
+- name: Install needed python modules
+  ansible.builtin.pip:
+    name:
+      '{{ common_dependencies.py }}'

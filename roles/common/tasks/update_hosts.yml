@@ -1,0 +1,9 @@
+# common/tasks/update_hosts.yml
+# Retrieve hosts file from S3 bucket an copy it to the instances
+
+- name: Update /etc/hosts file
+  amazon.aws.s3_object:
+    bucket: provisioner-bucket
+    object: hosts
+    dest: /etc/hosts
+    mode: get

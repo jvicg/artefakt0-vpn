@@ -1,0 +1,27 @@
+# common/vars/main.yml
+# Contains variables used on the role
+
+common_docker:
+  key: https://download.docker.com/linux/ubuntu/gpg
+  repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable
+
+common_k8s:
+  key: https://pkgs.k8s.io/core:/stable:/v1.28/deb/Release.key
+  repo: deb https://pkgs.k8s.io/core:/stable:/v1.28/deb/ /
+
+common_dependencies:
+  pkg:
+    - curl
+    - wget
+    - gnupg2
+    - ca-certificates
+    - apt-transport-https
+    - software-properties-common
+
+  mod:  # Kernel modules needed by Kubernetes
+    - 'overlay'
+    - 'br_netfilter'
+
+  py:
+    - boto3
+    - botocore
