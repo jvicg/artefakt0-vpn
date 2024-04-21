@@ -129,14 +129,14 @@ resource "aws_security_group" "allow_ssh_k8s" {
 
 # Files generation
 resource "local_file" "inventory" {  # Ansible's inventory
-  content = templatefile("${path.module}/template/ansible_inventory.tftpl", {
+  content = templatefile("${path.module}/templates/ansible_inventory.tftpl", {
     instances = aws_instance.main,
   })
   filename = "${path.module}/inventory"
 }
 
 resource "local_file" "hosts" {  # /etc/hosts (for the nodes)
-  content = templatefile("${path.module}/template/k8s_hosts.tftpl", {
+  content = templatefile("${path.module}/templates/k8s_hosts.tftpl", {
     instances = aws_instance.main
   })
   filename = "${path.module}/hosts"
