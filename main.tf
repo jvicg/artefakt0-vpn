@@ -32,6 +32,10 @@ locals {
     instance_type    = "t3.small"               # 2vCPU | 2GiB Mem
     instances_amount = "3"                      # Number of instances to be deployed
     region           = "us-east-1"              
+    s3_files         = [
+      "inventory",
+      "hosts"
+    ]
   }
 }
 
@@ -64,17 +68,21 @@ resource "aws_s3_bucket" "provisioner-bucket" {
   bucket = "provisioner-bucket"  
 
   tags = {
-    Name = "provisioner_bucket"
+    Name = "provisioner-bucket"
   }
 }
 
-# Uplodad inventory file to the bucket
+# Upload files to the S3 bucket
 resource "aws_s3_object" "inventory" {
-  bucket = aws_s3_bucket.provisioner-bucket.bucket
-  key    = "inventory"
-  source = "${path.module}/inventory"
+  for_each = toset(local.vars.s3_files)
+  bucket   = aws_s3_bucket.provisioner-bucket.bucket
+  key      = each.value
+  source   = "${path.module}/${each.value}"
 
-  depends_on = [local_file.inventory]
+  depends_on = [
+    local_file.hosts,
+    local_file.inventory
+  ]
 }
 
 # Create SSH key pair for the provisioner (Ansible)
@@ -131,5 +139,5 @@ resource "local_file" "hosts" {  # /etc/hosts (for the nodes)
   content = templatefile("${path.module}/template/k8s_hosts.tftpl", {
     instances = aws_instance.main
   })
-  filename = "${path.module}/roles/common/files/hosts"
+  filename = "${path.module}/hosts"
 }
