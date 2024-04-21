@@ -3,7 +3,7 @@
 # Including the installation of kubernetes and dependencies, disabling swap, enabling needed kernel modules, etc.
 
 - name: Upgrade the system and install dependencies
-  ansible.builtin.import_tasks: pre_set.yml
+  ansible.builtin.import_tasks: install_dependencies.yml
 
 - name: Install containerd
   ansible.builtin.import_tasks: install_containerd.yml
