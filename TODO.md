@@ -1,0 +1,14 @@
+# TODO
+- Adjust provision so its adapt to different distros (?) 
+- Implement logs on provisioner container
+- Improve syntax and error handling on entrypoint.sh
+- Replace Makefile with a Python script
+    - Generate aws_credentials and tf_credentials with user input
+    - Generate provisioner key pair
+    - Deploy provisioner container
+    - ...
+- Storage S3 bucket name into a variable
+- Why is docker generating so many trash images? 
+- Create .tfvars file to storage Terraform variables
+- Generate files with a for_each loop instead of declaring the block twice
+- Finish Kubernetes installation on instances
