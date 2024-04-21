@@ -9,6 +9,20 @@ terraform {
       version = "~> 5.0"  # Not update further than 5.x
     }
   }
+
+  # Connect with remote backend (Terraform Cloud)
+  cloud {
+    organization = "artefakt0"
+    workspaces {
+      name = "a0-vpn"
+    }
+  }
+}
+
+# Set AWS region and credentials
+provider "aws" {
+  region                   = local.vars.region
+  shared_credentials_files = ["${path.module}/aws_credentials"]
 }
 
 # Variables
@@ -24,12 +38,6 @@ locals {
 # Default VPC CIDR block (e.g: 172.31.10.0/16)
 data "aws_vpc" "default" {
   default = true  
-}
-
-# Set AWS region and credentials
-provider "aws" {
-  region                   = local.vars.region
-  shared_credentials_files = ["${path.module}/key/aws_credentials"]
 }
 
 # Instances deployment
@@ -51,10 +59,28 @@ resource "aws_instance" "main" {
   ]
 }
 
+# Create an S3 bucket to store needed files
+resource "aws_s3_bucket" "provisioner-bucket" {
+  bucket = "provisioner-bucket"  
+
+  tags = {
+    Name = "provisioner_bucket"
+  }
+}
+
+# Uplodad inventory file to the bucket
+resource "aws_s3_object" "inventory" {
+  bucket = aws_s3_bucket.provisioner-bucket.bucket
+  key    = "inventory"
+  source = "${path.module}/inventory"
+
+  depends_on = [local_file.inventory]
+}
+
 # Create SSH key pair for the provisioner (Ansible)
 resource "aws_key_pair" "provisioner" {
   key_name   = "provisioner-key"
-  public_key = file("${path.module}/key/provisioner.pub")
+  public_key = file("${path.module}/key/provisioner.key.pub")
 }
 
 # Security Group (definition of firewall rules)
@@ -98,12 +124,12 @@ resource "local_file" "inventory" {  # Ansible's inventory
   content = templatefile("${path.module}/template/ansible_inventory.tftpl", {
     instances = aws_instance.main,
   })
-  filename = "${path.module}/build/provisioner/inventory"
+  filename = "${path.module}/inventory"
 }
 
 resource "local_file" "hosts" {  # /etc/hosts (for the nodes)
   content = templatefile("${path.module}/template/k8s_hosts.tftpl", {
     instances = aws_instance.main
   })
-  filename = "${path.module}/build/provisioner/common/files/hosts"
+  filename = "${path.module}/roles/common/files/hosts"
 }
