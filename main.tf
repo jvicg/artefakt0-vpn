@@ -54,7 +54,7 @@ resource "aws_instance" "main" {
   associate_public_ip_address = true
 
   tags = {  # The first instance to be deployed will be the master node
-    Name = "${count.index == 0 ? "k8s_master" : "k8s_slave_${count.index - 1}"}"
+    Name = "${count.index == 0 ? "k8s_master" : "k8s_worker_${count.index - 1}"}"
   }
 
   depends_on = [
@@ -112,7 +112,7 @@ resource "aws_security_group" "allow_ssh_k8s" {
   }
 
   ingress {  # kubectl
-    cidr_blocks       = [data.aws_vpc.default.cidr_block]  # Allow communication between k8s master and slaves
+    cidr_blocks       = [data.aws_vpc.default.cidr_block]  # Allow communication between k8s master and workers
     protocol          = "tcp"
     from_port         = 6443
     to_port           = 6443
