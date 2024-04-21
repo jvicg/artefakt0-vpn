@@ -7,3 +7,8 @@
     object: hosts
     dest: /etc/hosts
     mode: get
+
+- name: Adjust /etc/hosts file permissions
+  ansible.builtin.file:
+    path: /etc/hosts
+    mode: '0644'
