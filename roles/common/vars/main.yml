@@ -25,3 +25,5 @@ common_dependencies:
   py:
     - boto3
     - botocore
+  
+common_bucket: provisioner-bucket
