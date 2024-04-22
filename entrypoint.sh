@@ -2,6 +2,8 @@
 # entrypoint.sh
 # Script responsible of running Terraform and Ansible cancelling process if errors happens
 
+export AWS_SHARED_CREDENTIALS_FILE=/provisioner/aws_credentials  # Provisional
+
 # Function to cancel running processes before exiting
 trap cleanup SIGINT SIGTERM
 
@@ -36,7 +38,8 @@ main() {
     if [ "$#" -eq 0 ]; then
         ex /usr/local/bin/terraform init                 # Initialize Terraform project
         ex /usr/local/bin/terraform apply -auto-approve  # Deploy the instances
-        ex ./venv/bin/python3 fetch_inventory.py         # Retrieve/update Ansible's inventory file
+        wait 15                                          # Wait for the instances to fully initialize
+        # ex ./venv/bin/python3 fetch_inventory.py         # Retrieve/update Ansible's inventory file
         ex ./venv/bin/ansible-playbook roles/site.yml    # Run Ansible
     # If arguments received
     else
