@@ -10,8 +10,8 @@ ENV AWS_SHARED_CREDENTIALS_FILE /provisioner/aws_credentials
 WORKDIR /provisioner
 
 # Install Ansible and dependencies
-RUN apk add --update --no-cache python3 openssl ca-certificates bash git sudo zip sshpass openssh-client rsync \ 
-    && apk add --no-cache --virtual build-dependencies py3-pip python3-dev libffi-dev openssl-dev build-base \
+RUN apk add --update --no-cache python3 openssl py3-pip ca-certificates git zip sshpass openssh-client rsync \ 
+    && apk add --no-cache --virtual build-dependencies python3-dev libffi-dev openssl-dev build-base \
     && python3 -m venv ./venv \
     && . ./venv/bin/activate \
     && pip install --upgrade pip cffi \
@@ -37,4 +37,4 @@ COPY . .
 
 RUN chmod 740 entrypoint.sh
 
-CMD [ "sh", "./entrypoint.sh" ]
+ENTRYPOINT [ "sh", "./entrypoint.sh" ]

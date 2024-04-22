@@ -32,6 +32,10 @@ locals {
     instance_type    = "t3.small"               # 2vCPU | 2GiB Mem
     instances_amount = "3"                      # Number of instances to be deployed
     region           = "us-east-1"              
+    templates        = {
+      hosts     = "ansible_inventory",
+      inventory = "k8s_hosts"
+    }
     s3_files         = [
       "inventory",
       "hosts"
@@ -81,7 +85,7 @@ resource "aws_s3_object" "inventory" {
 
   depends_on = [
     local_file.hosts,
-    local_file.inventory
+    # local_file.inventory
   ]
 }
 
@@ -127,17 +131,18 @@ resource "aws_security_group" "allow_ssh_k8s" {
   }
 }
 
-# Files generation
-resource "local_file" "inventory" {  # Ansible's inventory
-  content = templatefile("${path.module}/templates/ansible_inventory.tftpl", {
-    instances = aws_instance.main,
-  })
-  filename = "${path.module}/inventory"
-}
+# # Files generation
+# resource "local_file" "inventory" {  # Ansible's inventory
+#   content = templatefile("${path.module}/templates/ansible_inventory.tftpl", {
+#     instances = aws_instance.main,
+#   })
+#   filename = "${path.module}/inventory"
+# }
 
 resource "local_file" "hosts" {  # /etc/hosts (for the nodes)
-  content = templatefile("${path.module}/templates/k8s_hosts.tftpl", {
+  for_each = local.vars.templates
+  content  = templatefile("${path.module}/templates/${each.value}.tftpl", {
     instances = aws_instance.main
   })
-  filename = "${path.module}/hosts"
+  filename = "${path.module}/${each.key}"
 }
