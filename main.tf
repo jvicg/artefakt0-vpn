@@ -33,8 +33,8 @@ locals {
     instances_amount = "3"                      # Number of instances to be deployed
     region           = "us-east-1"              
     templates        = {
-      hosts     = "ansible_inventory",
-      inventory = "k8s_hosts"
+      inventory     = "ansible_inventory",
+      hosts         = "k8s_hosts"
     }
     s3_files         = [
       "inventory",
@@ -76,17 +76,22 @@ resource "aws_s3_bucket" "provisioner-bucket" {
   }
 }
 
+# Enable versioning on S3 bucket
+resource "aws_s3_bucket_versioning" "versioning-provisioner-bucket" {
+  bucket = aws_s3_bucket.provisioner-bucket.id
+  versioning_configuration {
+    status = "Enabled"
+  }
+}
+
 # Upload files to the S3 bucket
 resource "aws_s3_object" "inventory" {
-  for_each = toset(local.vars.s3_files)
-  bucket   = aws_s3_bucket.provisioner-bucket.bucket
-  key      = each.value
-  source   = "${path.module}/${each.value}"
-
-  depends_on = [
-    local_file.hosts,
-    # local_file.inventory
-  ]
+  for_each      = toset(local.vars.s3_files)
+  bucket        = aws_s3_bucket.provisioner-bucket.bucket
+  key           = each.value
+  source        = "${path.module}/${each.value}"
+  # force_destroy = true
+  depends_on    = [local_file.hosts]
 }
 
 # Create SSH key pair for the provisioner (Ansible)
@@ -131,18 +136,12 @@ resource "aws_security_group" "allow_ssh_k8s" {
   }
 }
 
-# # Files generation
-# resource "local_file" "inventory" {  # Ansible's inventory
-#   content = templatefile("${path.module}/templates/ansible_inventory.tftpl", {
-#     instances = aws_instance.main,
-#   })
-#   filename = "${path.module}/inventory"
-# }
-
+# Files generation
 resource "local_file" "hosts" {  # /etc/hosts (for the nodes)
   for_each = local.vars.templates
   content  = templatefile("${path.module}/templates/${each.value}.tftpl", {
     instances = aws_instance.main
   })
   filename = "${path.module}/${each.key}"
+  depends_on = [aws_instance.main]
 }
