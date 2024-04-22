@@ -14,6 +14,7 @@ common_dependencies:
     - curl
     - wget
     - gnupg2
+    - python3-pip
     - ca-certificates
     - apt-transport-https
     - software-properties-common
@@ -25,5 +26,5 @@ common_dependencies:
   py:
     - boto3
     - botocore
-  
+
 common_bucket: provisioner-bucket

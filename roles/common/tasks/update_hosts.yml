@@ -7,6 +7,9 @@
     object: hosts
     dest: /etc/hosts
     mode: get
+    # aws_access_key_id:
+    # aws_secret_key:
+    # session_token:
 
 - name: Adjust /etc/hosts file permissions
   ansible.builtin.file:

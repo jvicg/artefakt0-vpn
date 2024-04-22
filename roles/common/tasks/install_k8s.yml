@@ -43,7 +43,7 @@
     name: '{{ item }}'
     persistent: present
   with_items:
-    '{{ dependencies.mod }}'
+    '{{ common_dependencies.mod }}'
 
 - name: Activate needed features on kubernetes.conf
   ansible.builtin.lineinfile:
