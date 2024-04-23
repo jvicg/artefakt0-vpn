@@ -22,7 +22,7 @@ RUN apk add --update --virtual .deps --no-cache gnupg && \
     rm -f /tmp/terraform_${TF_VERSION}_linux_amd64.zip terraform_${TF_VERSION}_SHA256SUMS ${TF_VERSION}/terraform_${TF_VERSION}_SHA256SUMS.sig && \
     apk del .deps
 
-# Final container image
+# Final stage
 FROM alpine:latest
 
 ENV AWS_SHARED_CREDENTIALS_FILE /provisioner/aws_credentials

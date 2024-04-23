@@ -3,9 +3,7 @@
 # This playbook will act as entrypoint of the provision
 
 - name: Run common provisioning on master and workers
-  hosts:
-    - master
-    - workers
+  hosts: all
   become: true
   roles:
     - common

@@ -37,12 +37,12 @@ handle_put_tfstate() {
     ./venv/bin/python3 scripts/put_s3.py
 
     if [ $? -ne 0 ]; then
+        echo "fatal error: Unable to upload terraform state to S3 bucket. Terminating instances..."
         ex terraform destroy -auto-approve && exit 400
     fi
 }
 
 main() {
-
     ./venv/bin/python3 scripts/get_s3.py 2>/dev/null      # Download the tfstate file from S3 bucket if exists
 
     # If the output from last command is equal to 0 means 
@@ -54,7 +54,7 @@ main() {
     # Regular execution (no arguments received)
     else 
         ex terraform init                                       
-        ex terraform apply -auto-approve && wait 60       # Deploy the instances and wait to fully initialize
+        ex terraform apply -auto-approve && sleep 30      # Deploy the instances and wait to fully initialize
         handle_put_tfstate                                # Upload tfstate file to S3 bucket
         ex ./venv/bin/ansible-playbook site.yml              
     fi
