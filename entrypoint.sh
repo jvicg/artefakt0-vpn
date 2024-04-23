@@ -39,8 +39,8 @@ main() {
         ex /usr/local/bin/terraform init                 # Initialize Terraform project
         ex /usr/local/bin/terraform apply -auto-approve  # Deploy the instances
         wait 15                                          # Wait for the instances to fully initialize
-        # ex ./venv/bin/python3 fetch_inventory.py         # Retrieve/update Ansible's inventory file
-        ex ./venv/bin/ansible-playbook roles/site.yml    # Run Ansible
+        ex ./venv/bin/python3 fetch_inventory.py         # Retrieve/update Ansible's inventory file
+        ex ./venv/bin/ansible-playbook site.yml          # Run Ansible
     # If arguments received
     else
         ex "$@"

@@ -2,4 +2,5 @@
 *.old
 *key*
 *credentials*
+inventory
 !.dockerignore

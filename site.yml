@@ -1,6 +1,6 @@
 # site.yml
-# Main Ansible orchestator
-# This playbook will execute the roles on the hosts
+# Main orchestrator
+# This playbook will act as entrypoint of the provision
 
 - name: Run common provisioning on master and workers
   hosts:
