@@ -24,6 +24,7 @@ locals {
     instance_type    = "t3.small"               # 2vCPU | 2GiB Mem
     instances_amount = "3"                      # Number of instances to be deployed
     region           = "us-east-1"              
+
     generated_files  = {
       inventory     = "ansible_inventory",      # Name of the file = Name of the template
       hosts         = "k8s_hosts"
@@ -99,20 +100,13 @@ resource "aws_security_group" "allow_k8s_ssh" {
 
 # Create an S3 bucket to store the status of terraform (.tfstate)
 resource "aws_s3_bucket" "provisioner-bucket" {
-  bucket = "provisioner-bucket"  
+  bucket        = "provisioner-bucket"  
+  force_destroy = true
 
   tags = {
     Name = "provisioner-bucket"
   }
 }
-
-# # Enable versioning on S3 bucket
-# resource "aws_s3_bucket_versioning" "versioning-provisioner-bucket" {
-#   bucket = aws_s3_bucket.provisioner-bucket.id
-#   versioning_configuration {
-#     status = "Enabled"
-#   }
-# }
 
 # Files generation
 resource "local_file" "hosts" { 

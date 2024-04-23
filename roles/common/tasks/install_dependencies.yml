@@ -10,8 +10,3 @@
   ansible.builtin.apt:
     pkg:
       '{{ common_dependencies.pkg }}'
-
-- name: Install needed python modules
-  ansible.builtin.pip:
-    name:
-      '{{ common_dependencies.py }}'

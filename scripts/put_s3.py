@@ -11,6 +11,7 @@ try:
     s3 = boto3.client("s3")
     s3.upload_file(src, bucket, dest)
     print(f"File {src} successfully uploaded to the bucket")
+    sys.exit(0)
 except Exception as e:
     sys.stderr.write(f"Error when retrieving the file {src}: {e}\n")
     sys.exit(400)
