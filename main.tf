@@ -9,14 +9,6 @@ terraform {
       version = "~> 5.0"  # Not update further than 5.x
     }
   }
-
-  # Connect with remote backend (Terraform Cloud)
-  cloud {
-    organization = "artefakt0"
-    workspaces {
-      name = "a0-vpn"
-    }
-  }
 }
 
 # Set AWS region and credentials
@@ -32,14 +24,10 @@ locals {
     instance_type    = "t3.small"               # 2vCPU | 2GiB Mem
     instances_amount = "3"                      # Number of instances to be deployed
     region           = "us-east-1"              
-    templates        = {
-      inventory     = "ansible_inventory",
+    generated_files  = {
+      inventory     = "ansible_inventory",      # Name of the file = Name of the template
       hosts         = "k8s_hosts"
     }
-    s3_files         = [
-      "inventory",
-      "hosts"
-    ]
   }
 }
 
@@ -54,7 +42,7 @@ resource "aws_instance" "main" {
   count         = local.vars.instances_amount
   instance_type = local.vars.instance_type
   key_name      = aws_key_pair.provisioner.key_name
-  vpc_security_group_ids = [aws_security_group.allow_ssh_k8s.id]
+  vpc_security_group_ids = [aws_security_group.allow_k8s_ssh.id]
   associate_public_ip_address = true
 
   tags = {  # The first instance to be deployed will be the master node
@@ -63,7 +51,7 @@ resource "aws_instance" "main" {
 
   depends_on = [
     aws_key_pair.provisioner,
-    aws_security_group.allow_ssh_k8s
+    aws_security_group.allow_k8s_ssh
   ]
 }
 
@@ -74,8 +62,8 @@ resource "aws_key_pair" "provisioner" {
 }
 
 # Security Group (definition of firewall rules)
-resource "aws_security_group" "allow_ssh_k8s" {
-  name        = "allow_ssh_k8s"
+resource "aws_security_group" "allow_k8s_ssh" {
+  name        = "allow_k8s_ssh"
   description = "Allow SSH and k8s inbound traffic and all outbound traffic"
 
   # Inbound rules
@@ -109,7 +97,7 @@ resource "aws_security_group" "allow_ssh_k8s" {
   }
 }
 
-# Create an S3 bucket to store needed files
+# Create an S3 bucket to store the status of terraform (.tfstate)
 resource "aws_s3_bucket" "provisioner-bucket" {
   bucket = "provisioner-bucket"  
 
@@ -118,29 +106,20 @@ resource "aws_s3_bucket" "provisioner-bucket" {
   }
 }
 
-# Enable versioning on S3 bucket
-resource "aws_s3_bucket_versioning" "versioning-provisioner-bucket" {
-  bucket = aws_s3_bucket.provisioner-bucket.id
-  versioning_configuration {
-    status = "Enabled"
-  }
-}
+# # Enable versioning on S3 bucket
+# resource "aws_s3_bucket_versioning" "versioning-provisioner-bucket" {
+#   bucket = aws_s3_bucket.provisioner-bucket.id
+#   versioning_configuration {
+#     status = "Enabled"
+#   }
+# }
 
 # Files generation
-resource "local_file" "hosts" {  # /etc/hosts (for the nodes)
-  for_each = local.vars.templates
+resource "local_file" "hosts" { 
+  for_each = local.vars.generated_files
   content  = templatefile("${path.module}/templates/${each.value}.tftpl", {
     instances = aws_instance.main
   })
   filename = "${path.module}/${each.key}"
   depends_on = [ aws_instance.main ]
-}
-
-# Upload files to the S3 bucket
-resource "aws_s3_object" "inventory" {
-  for_each      = toset(local.vars.s3_files)
-  bucket        = aws_s3_bucket.provisioner-bucket.bucket
-  key           = each.value
-  source        = "${path.module}/${each.value}"
-  depends_on    = [ local_file.hosts ]
 }
