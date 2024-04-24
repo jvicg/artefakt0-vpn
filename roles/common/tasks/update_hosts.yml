@@ -2,16 +2,7 @@
 # Retrieve hosts file from S3 bucket an copy it to the instances
 
 - name: Update /etc/hosts file
-  amazon.aws.s3_object:
-    bucket: '{{ common_bucket }}'
-    object: hosts
+  ansible.builtin.copy:
+    src: common_hosts
     dest: /etc/hosts
-    mode: get
-    # aws_access_key_id:
-    # aws_secret_key:
-    # session_token:
-
-- name: Adjust /etc/hosts file permissions
-  ansible.builtin.file:
-    path: /etc/hosts
     mode: '0644'

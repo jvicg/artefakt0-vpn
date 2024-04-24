@@ -1,5 +1,5 @@
 # main.tf
-# File responsible of the deployment of the AWS Instances
+# File responsible for the deployment of the AWS Instances
 
 # Providers installation
 terraform {
@@ -9,20 +9,12 @@ terraform {
       version = "~> 5.0"  # Not update further than 5.x
     }
   }
-
-  # Connect with remote backend (Terraform Cloud)
-  cloud {
-    organization = "artefakt0"
-    workspaces {
-      name = "a0-vpn"
-    }
-  }
 }
 
 # Set AWS region and credentials
 provider "aws" {
   region                   = local.vars.region
-  shared_credentials_files = ["${path.module}/aws_credentials"]
+  shared_credentials_files = [ "${path.module}/aws_credentials" ]
 }
 
 # Variables
@@ -32,14 +24,11 @@ locals {
     instance_type    = "t3.small"               # 2vCPU | 2GiB Mem
     instances_amount = "3"                      # Number of instances to be deployed
     region           = "us-east-1"              
-    templates        = {
-      inventory     = "ansible_inventory",
-      hosts         = "k8s_hosts"
+
+    generated_files  = {
+      inventory     = "ansible_inventory",      # Name of the file = Name of the template
+      common_hosts  = "k8s_hosts"
     }
-    s3_files         = [
-      "inventory",
-      "hosts"
-    ]
   }
 }
 
@@ -54,7 +43,7 @@ resource "aws_instance" "main" {
   count         = local.vars.instances_amount
   instance_type = local.vars.instance_type
   key_name      = aws_key_pair.provisioner.key_name
-  vpc_security_group_ids = [aws_security_group.allow_ssh_k8s.id]
+  vpc_security_group_ids = [aws_security_group.allow_k8s_ssh.id]
   associate_public_ip_address = true
 
   tags = {  # The first instance to be deployed will be the master node
@@ -63,35 +52,8 @@ resource "aws_instance" "main" {
 
   depends_on = [
     aws_key_pair.provisioner,
-    aws_security_group.allow_ssh_k8s
+    aws_security_group.allow_k8s_ssh
   ]
-}
-
-# Create an S3 bucket to store needed files
-resource "aws_s3_bucket" "provisioner-bucket" {
-  bucket = "provisioner-bucket"  
-
-  tags = {
-    Name = "provisioner-bucket"
-  }
-}
-
-# Enable versioning on S3 bucket
-resource "aws_s3_bucket_versioning" "versioning-provisioner-bucket" {
-  bucket = aws_s3_bucket.provisioner-bucket.id
-  versioning_configuration {
-    status = "Enabled"
-  }
-}
-
-# Upload files to the S3 bucket
-resource "aws_s3_object" "inventory" {
-  for_each      = toset(local.vars.s3_files)
-  bucket        = aws_s3_bucket.provisioner-bucket.bucket
-  key           = each.value
-  source        = "${path.module}/${each.value}"
-  # force_destroy = true
-  depends_on    = [local_file.hosts]
 }
 
 # Create SSH key pair for the provisioner (Ansible)
@@ -101,27 +63,27 @@ resource "aws_key_pair" "provisioner" {
 }
 
 # Security Group (definition of firewall rules)
-resource "aws_security_group" "allow_ssh_k8s" {
-  name        = "allow_ssh_k8s"
-  description = "Allow SSH and k8s inbound traffic and all outbound traffic"
+resource "aws_security_group" "allow_k8s_ssh" {
+  name        = "allow_k8s_ssh"
+  description = "Allow port 22 (SSH) and port 6443 (k8s) inbound traffic and all outbound traffic"
 
   # Inbound rules
   ingress {  # ssh
-    cidr_blocks       = ["0.0.0.0/0"]  # Range of allowed IPs
+    cidr_blocks       = [ "0.0.0.0/0" ]  # Range of allowed IPs
     protocol          = "tcp"
     from_port         = 22
     to_port           = 22
   }
 
-  ingress { # icmp (for testing porpuses) 
-    cidr_blocks       = ["0.0.0.0/0"]
+  ingress { # icmp (for testing purposes) 
+    cidr_blocks       = [ "0.0.0.0/0" ]
     protocol          = "icmp"
     from_port         = -1  # -1 stands for all ports
     to_port           = -1
   }
 
   ingress {  # kubectl
-    cidr_blocks       = [data.aws_vpc.default.cidr_block]  # Allow communication between k8s master and workers
+    cidr_blocks       = [ data.aws_vpc.default.cidr_block ]  # Allow communication between k8s master and workers
     protocol          = "tcp"
     from_port         = 6443
     to_port           = 6443
@@ -129,19 +91,29 @@ resource "aws_security_group" "allow_ssh_k8s" {
 
   # Allow all the outgoing traffic
   egress {
-    cidr_blocks       = ["0.0.0.0/0"]
+    cidr_blocks       = [ "0.0.0.0/0" ]
     protocol          = "-1" 
     from_port         = 0
     to_port           = 0
   }
 }
 
+# Create an S3 bucket to store the status of terraform (.tfstate)
+resource "aws_s3_bucket" "provisioner-bucket" {
+  bucket        = "provisioner-bucket"  
+  force_destroy = true
+
+  tags = {
+    Name = "provisioner-bucket"
+  }
+}
+
 # Files generation
-resource "local_file" "hosts" {  # /etc/hosts (for the nodes)
-  for_each = local.vars.templates
+resource "local_file" "dynamic_files" { 
+  for_each = local.vars.generated_files
   content  = templatefile("${path.module}/templates/${each.value}.tftpl", {
     instances = aws_instance.main
   })
-  filename = "${path.module}/${each.key}"
-  depends_on = [aws_instance.main]
+  filename = startswith(each.key, "common_") ? "${path.module}/roles/common/files/${each.key}" : "${path.module}/${each.key}"
+  depends_on = [ aws_instance.main ]
 }
