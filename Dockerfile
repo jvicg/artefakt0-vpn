@@ -8,6 +8,8 @@ ENV TF_VERSION 1.8.1
 
 WORKDIR /build
 
+COPY main.tf main.tf
+
 # Download Terraform and check integrity and signature of the binary
 RUN apk add --update --virtual .deps --no-cache gnupg && \
     cd /tmp && \
@@ -22,6 +24,8 @@ RUN apk add --update --virtual .deps --no-cache gnupg && \
     rm -f /tmp/terraform_${TF_VERSION}_linux_amd64.zip terraform_${TF_VERSION}_SHA256SUMS ${TF_VERSION}/terraform_${TF_VERSION}_SHA256SUMS.sig && \
     apk del .deps
 
+RUN /build/terraform init
+
 # Final stage
 FROM alpine:latest
 
@@ -29,8 +33,10 @@ ENV AWS_SHARED_CREDENTIALS_FILE /provisioner/aws_credentials
 
 WORKDIR /provisioner
 
-# Get terraform binary from the builder
-COPY --from=builder /build/terraform /usr/local/bin/terraform
+# Get terraform resources and binary from the builder
+COPY --from=builder /build/terraform /usr/local/bin/terraform 
+COPY --from=builder /build/.terraform /provisioner/.terraform
+COPY --from=builder /build/.terraform.lock.hcl /provisioner/.terraform.lock.hcl
 
 # Install Ansible and dependencies
 RUN apk add --update --no-cache python3 openssl ca-certificates git zip sshpass openssh-client rsync \ 

@@ -27,7 +27,7 @@ locals {
 
     generated_files  = {
       inventory     = "ansible_inventory",      # Name of the file = Name of the template
-      hosts         = "k8s_hosts"
+      common_hosts  = "k8s_hosts"
     }
   }
 }
@@ -65,7 +65,7 @@ resource "aws_key_pair" "provisioner" {
 # Security Group (definition of firewall rules)
 resource "aws_security_group" "allow_k8s_ssh" {
   name        = "allow_k8s_ssh"
-  description = "Allow SSH and k8s inbound traffic and all outbound traffic"
+  description = "Allow port 22 (SSH) and port 6443 (k8s) inbound traffic and all outbound traffic"
 
   # Inbound rules
   ingress {  # ssh
@@ -109,11 +109,11 @@ resource "aws_s3_bucket" "provisioner-bucket" {
 }
 
 # Files generation
-resource "local_file" "hosts" { 
+resource "local_file" "dynamic_files" { 
   for_each = local.vars.generated_files
   content  = templatefile("${path.module}/templates/${each.value}.tftpl", {
     instances = aws_instance.main
   })
-  filename = "${path.module}/${each.key}"
+  filename = startswith(each.key, "common_") ? "${path.module}/roles/common/files/${each.key}" : "${path.module}/${each.key}"
   depends_on = [ aws_instance.main ]
 }
