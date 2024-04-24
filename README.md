@@ -1,6 +1,5 @@
 ![](images/typo-pos-trans.png)
-# artefakt0-vpn
-
+# 
 >[!WARNING]
 > This repository is under development. Some functionalities may not work.
 
