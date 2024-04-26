@@ -1,7 +1,7 @@
 #!/bin/python
 # Script to retrieve Ansible's inventory file from a S3 bucket 
 
-import boto3, sys, os  # type: ignore
+import os, sys, boto3  # type: ignore
 
 bucket = "provisioner-bucket"
 src = "terraform.tfstate"
@@ -13,7 +13,5 @@ try:
     os.rename(f"{dest}.tmp", dest)  # Rename file so it replaces the original inventory file if exists
     sys.exit(0)
 except Exception as e:
-    sys.stderr.write(f"Error when retrieving the file {src}: {e}\n")
+    sys.stderr.write(f"error: Error when retrieving the file {src}: {e}\n")
     sys.exit(400)
-
-

@@ -23,7 +23,7 @@ ex() {
 
     # Check for errors on command exit code
     if [ $? -ne 0 ]; then
-        printf "error: Errors ocurred while running the command: '$*'. Terminating...\n"
+        printf "fatal: Errors ocurred while running the command: '$*'. Terminating...\n"
         exit $?
     fi
 
@@ -35,7 +35,7 @@ handle_put_tfstate() {
     ./venv/bin/python3 scripts/put_s3.py
 
     if [ $? -ne 0 ]; then
-        printf "fatal error: Unable to upload terraform state to S3 bucket. Terminating instances...\n"
+        printf "fatal: Unable to upload terraform state to S3 bucket. Terminating instances...\n"
         ex terraform destroy -auto-approve && exit 400
     fi
 }
@@ -53,15 +53,12 @@ main() {
     else 
         ex terraform apply -auto-approve && sleep 30      # Deploy the instances and wait to fully initialize
         handle_put_tfstate                                # Upload tfstate file to S3 bucket
-        ex ./venv/bin/ansible-playbook site.yml              
+        ex ./venv/bin/ansible-playbook site.yml
     fi
 
     printf "info: Entrypoint successfully executed. Deployer waiting for instructions...\n" 
 
-    # Main container loop
-    while true; do
-        sleep 1
-    done
+    exec bash
 }
 
 main "$@"
