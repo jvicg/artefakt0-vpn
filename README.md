@@ -1,4 +1,4 @@
-![](images/typo-pos-trans.png)
+![](logo.png)
 # 
 >[!WARNING]
 > This repository is under development. Some functionalities may not work.
