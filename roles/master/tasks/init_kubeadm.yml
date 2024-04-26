@@ -1,0 +1,20 @@
+# roles/tasks/init_kubeadm.yml
+# Initialize the cluster
+# TODO: improve user creation
+
+- name: Create a user responsible of managing the cluster (avoiding using root)
+  ansible.builtin.user:
+    name: '{{ master_local_user }}'
+    comment: User with access to k8s cluster
+    uid: 1101
+    shell: /bin/bash
+  tags:
+    - testing
+
+- name: Initialize the cluster
+  k8s_init_cluster:
+    master_ip: '{{ master_hostname }}'
+    cidr_block: '{{ master_cluster_cidr }}'
+    user: '{{ master_local_user }}'
+  tags:
+    - testing
