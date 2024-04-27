@@ -1,5 +1,6 @@
 .*
 *.old
 *key*
+*__pycache__*
 *credentials*
 !.dockerignore

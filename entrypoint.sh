@@ -19,12 +19,12 @@ cleanup() {
 ex() {
     "$@" &  
     PROCESS_PID="$!"   
-    wait $PROCESS_PID
+    wait "$PROCESS_PID"
 
     # Check for errors on command exit code
-    if [ $? -ne 0 ]; then
-        printf "error: Errors ocurred while running the command: '$*'. Terminating...\n"
-        exit $?
+    if [ "$?" -ne 0 ]; then
+        printf "fatal: Errors ocurred while running the command: '$*'. Terminating...\n"
+        exit "$?"
     fi
 
     unset PROCESS_PID
@@ -34,8 +34,8 @@ ex() {
 handle_put_tfstate() {
     ./venv/bin/python3 scripts/put_s3.py
 
-    if [ $? -ne 0 ]; then
-        printf "fatal error: Unable to upload terraform state to S3 bucket. Terminating instances...\n"
+    if [ "$?" -ne 0 ]; then
+        printf "fatal: Unable to upload terraform state to S3 bucket. Terminating instances...\n"
         ex terraform destroy -auto-approve && exit 400
     fi
 }
@@ -46,22 +46,19 @@ main() {
     # If the output from last command is equal to 0, means 
     # that the instances are already running 
     # so passing arguments to the container will be allowed
-    if [[ $? == 0 ]] && [[ "$#" != 0 ]]; then
+    if [[ "$?" == 0 ]] && [[ "$#" != 0 ]]; then
         ex "$@"
 
     # Regular execution (no arguments received)
     else 
         ex terraform apply -auto-approve && sleep 30      # Deploy the instances and wait to fully initialize
         handle_put_tfstate                                # Upload tfstate file to S3 bucket
-        ex ./venv/bin/ansible-playbook site.yml              
+        ex ./venv/bin/ansible-playbook site.yml
     fi
 
     printf "info: Entrypoint successfully executed. Deployer waiting for instructions...\n" 
 
-    # Main container loop
-    while true; do
-        sleep 1
-    done
+    exec bash
 }
 
 main "$@"

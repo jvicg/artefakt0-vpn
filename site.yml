@@ -7,3 +7,9 @@
   become: true
   roles:
     - common
+
+- name: Configure cluster on the master node
+  hosts: master
+  become: true
+  roles:
+    - master

@@ -1,0 +1,7 @@
+# master/tasks/main.yml
+# Contents the steps to specific to the master node
+
+- name: Initialize the cluster
+  ansible.builtin.import_tasks: init_kubeadm.yml
+  tags:
+    - testing

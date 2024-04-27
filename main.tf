@@ -47,7 +47,7 @@ resource "aws_instance" "main" {
   associate_public_ip_address = true
 
   tags = {  # The first instance to be deployed will be the master node
-    Name = "${count.index == 0 ? "k8s_master" : "k8s_worker_${count.index - 1}"}"
+    Name = "${count.index == 0 ? "k8scp" : "k8sworker${count.index - 1}"}"
   }
 
   depends_on = [

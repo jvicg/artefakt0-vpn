@@ -24,7 +24,7 @@ RUN apk add --update --virtual .deps --no-cache gnupg && \
     rm -f /tmp/terraform_${TF_VERSION}_linux_amd64.zip terraform_${TF_VERSION}_SHA256SUMS ${TF_VERSION}/terraform_${TF_VERSION}_SHA256SUMS.sig && \
     apk del .deps
 
-RUN /build/terraform init
+RUN /build/terraform init 
 
 # Final stage
 FROM alpine:latest
@@ -39,14 +39,15 @@ COPY --from=builder /build/.terraform /provisioner/.terraform
 COPY --from=builder /build/.terraform.lock.hcl /provisioner/.terraform.lock.hcl
 
 # Install Ansible and dependencies
-RUN apk add --update --no-cache python3 openssl ca-certificates git zip sshpass openssh-client rsync \ 
+RUN apk add --update --no-cache python3 openssl ca-certificates git zip sshpass openssh-client rsync bash \ 
     && apk add --no-cache --virtual build-dependencies py3-pip python3-dev libffi-dev openssl-dev build-base \
     && python3 -m venv ./venv \
     && . ./venv/bin/activate \
     && pip install --upgrade pip cffi \
     && pip install botocore boto3 ansible docker-py \
     && pip install --upgrade pycrypto pywinrm \
-    && apk del build-dependencies
+    && apk del build-dependencies \
+    && ansible-galaxy collection install community.kubernetes
 
 COPY . .
 
