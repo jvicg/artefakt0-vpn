@@ -8,13 +8,9 @@
     comment: User with access to k8s cluster
     uid: 1101
     shell: /bin/bash
-  tags:
-    - testing
 
 - name: Initialize the cluster
   k8s_init_cluster:
     master_ip: '{{ master_hostname }}'
     cidr_block: '{{ master_cluster_cidr }}'
     user: '{{ master_local_user }}'
-  tags:
-    - testing

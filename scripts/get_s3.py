@@ -13,5 +13,5 @@ try:
     os.rename(f"{dest}.tmp", dest)  # Rename file so it replaces the original inventory file if exists
     sys.exit(0)
 except Exception as e:
-    sys.stderr.write(f"error: Error when retrieving the file {src}: {e}\n")
+    sys.stderr.write(f"error: Error when retrieving the file '{src}': '{e}'\n")
     sys.exit(400)
