@@ -15,16 +15,23 @@ def main():
     files = ["terraform.tfstate"]  # Terraform's state needs to be uploaded to the bucket, no matter its format
     files += [f for f in os.listdir(cwd) if f.endswith('.s3')]  # Exam the directory to obtain the files with '.s3' format
 
-    for file in files:
-        try: 
-            s3.upload_file(file, bucket, file)  
-            print(f"info: File '{file}' successfully uploaded to the bucket.")
+    try: 
+        for file in files:
+            try: 
+                s3.upload_file(file, bucket, file)  
+                print(f"info: File '{file}' successfully uploaded to the bucket.")
 
-        except boto3.exceptions.ClientError as e:
-            sys.stderr.write(f"fatal: Error when trying to upload the file '{file}': '{e}'\n")
-            sys.exit(400)
+            except boto3.exceptions.ClientError as e: raise Exception(f"fatal: Error when trying to upload the file '{file}': '{e}'\n")
     
-    handle_naming()
+    except boto3.exceptions.ClientError as e:
+        sys.stderr.write(f"fatal: Error when trying to connect to AWS: '{e}'")
+        sys.exit(399)
+    
+    except Exception as e:
+        sys.stderr.write(e)
+        sys.exit(400)
+
+    finally: handle_naming()
 
 if __name__ == '__main__':
     main()
