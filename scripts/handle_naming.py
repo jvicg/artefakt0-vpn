@@ -4,7 +4,7 @@
 # and moving it to its proper directory.
 # e.g: if the file is needed by the rol 'common' it will  be moved to roles/common/files
 
-import os
+import os, sys
 
 def handle_naming():
     cwd = os.getcwd()
@@ -15,8 +15,13 @@ def handle_naming():
     unformatted_f = [ f for f in os.listdir(cwd) if f.endswith('.s3') ]  # Exam the directory to obtain the files with .s3 format
     files = [ f[:-3] for f in unformatted_f ]  # Remove the '.s3' on the files' name
 
-    for i in range(len(files)):
-        if files[i].startswith('common_'): # Role's files will have the prefix '<role_name>_' 
-            os.rename(unformatted_f[i], os.path.join(common, files[i]))
-        
-        else: os.rename(unformatted_f[i], files[i]) 
+    try:
+        for i in range(len(files)):
+            if files[i].startswith('common_'): # Role's files will have the prefix '<role_name>_' 
+                os.rename(unformatted_f[i], os.path.join(common, files[i]))
+            
+            else: os.rename(unformatted_f[i], files[i]) 
+
+    except Exception as e: 
+        sys.stderr.write(f"fatal: Error when trying to rename the files: '{e}'\n")
+        sys.exit(400)

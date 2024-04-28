@@ -1,6 +1,5 @@
 # master/vars/main.yml
 # Contains variables used on the role
 
-master_cluster_cidr: 172.24.0.0/16
-master_hostname: k8scp
-master_local_user: '{{ master_hostname }}'
+master_cidr: 172.24.0.0/16
+master_user: admin
