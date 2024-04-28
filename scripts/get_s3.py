@@ -4,7 +4,7 @@
 # This script will recursively download all the files on the bucket
 
 import sys, boto3
-from boto3.exceptions import ClientError  # type: ignore
+import boto3.exceptions  # type: ignore
 from handle_naming import handle_naming
 
 def main():
@@ -16,9 +16,9 @@ def main():
         for obj in r['Contents']:
             file = obj['Key']  # Get the file name
             try: s3.download_file(bucket, file, file)
-            except ClientError as e: raise Exception(f"fatal: Error when trying to download the file: '{file}': {e}")
+            except boto3.exceptions.ClientError as e: raise Exception(f"fatal: Error when trying to download the file: '{file}': {e}")
 
-    except ClientError as e: 
+    except boto3.exceptions.ClientError as e: 
         sys.stderr.write(f"fatal: Error when trying to connect to AWS: '{e}'\n")
         sys.exit(400)
     
