@@ -1,7 +1,8 @@
 # master/tasks/main.yml
 # Contents the steps to specific to the master node
 
+- name: Create the user responsible for managing the cluster
+  ansible.builtin.import_tasks: create_user.yml
+
 - name: Initialize the cluster
   ansible.builtin.import_tasks: init_kubeadm.yml
-  tags:
-    - testing

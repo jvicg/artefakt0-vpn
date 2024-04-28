@@ -1,10 +1,9 @@
 # master/library/k8s_init_cluster.py
 # Custom Ansible's module to initialize a Kubernetes cluster only if doesn't exists already
-# TODO: Insert init_cluster into a try-except clause
 # TODO: Improve error messages
 
 import os, pwd, grp, shutil, subprocess
-from ansible.module_utils.basic import AnsibleModule
+from ansible.module_utils.basic import AnsibleModule  # type: ignore
 
 DOCUMENTATION = r'''
 ---
@@ -78,19 +77,7 @@ def insert_config(user, result, module):
             result['message'].append("info: Configuration file successfully appended to user config.")
         except: handle_error(e, result, module)
 
-# # Function responsible of initializing the cluster 
-# def init_cluster(master_ip, cidr_block, user, result, module):
-#     init_command = ["kubeadm", "init", f"--pod-network-cidr={cidr_block}", "--cri-socket=unix:///run/containerd/containerd.sock", "--upload-certs", f"--control-plane-endpoint={master_ip}"]
-#     output = subprocess.run(init_command, stdout=subprocess.PIPE)
-
-#     if output.returncode != 0: handle_error(output.stderr.decode('utf-8'), result, module)
- 
-#     else: 
-#         insert_config(user, result, module)
-#         result['changed'] = True
-#         result['message'].append("info: The cluster was successfully initialized.")
-
-
+# Function responsible of initializing the cluster 
 def init_cluster(master_ip, cidr_block, user, result, module):
     init_command = ["kubeadm", "init", f"--pod-network-cidr={cidr_block}", "--cri-socket=unix:///run/containerd/containerd.sock", "--upload-certs", f"--control-plane-endpoint={master_ip}"]
     try:

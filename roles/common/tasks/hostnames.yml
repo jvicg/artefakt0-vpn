@@ -1,0 +1,6 @@
+# common/tasks/hostnames.yml
+# Change the hostname to the instance so they're easily identified
+
+- name: Change the hostname
+  ansible.builtin.hostname:
+    name: '{{ inventory_hostname }}'

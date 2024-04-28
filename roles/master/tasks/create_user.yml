@@ -1,0 +1,8 @@
+# master/tasks/create_users.yml
+
+- name: Create a user responsible for managing the cluster (avoiding using root)
+  ansible.builtin.user:
+    name: '{{ master_user }}'
+    comment: User with access to k8s cluster
+    uid: 1101
+    shell: /bin/bash
