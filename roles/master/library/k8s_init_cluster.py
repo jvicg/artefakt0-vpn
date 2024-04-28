@@ -1,10 +1,9 @@
 # master/library/k8s_init_cluster.py
 # Custom Ansible's module to initialize a Kubernetes cluster only if doesn't exists already
-# TODO: Insert init_cluster into a try-except clause
 # TODO: Improve error messages
 
 import os, pwd, grp, shutil, subprocess
-from ansible.module_utils.basic import AnsibleModule
+from ansible.module_utils.basic import AnsibleModule  # type: ignore
 
 DOCUMENTATION = r'''
 ---

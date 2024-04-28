@@ -99,8 +99,8 @@ resource "aws_security_group" "allow_k8s_ssh" {
 }
 
 # Create an S3 bucket to store the status of terraform (.tfstate)
-resource "aws_s3_bucket" "provisioner-bucket" {
-  bucket        = "provisioner-bucket"  
+resource "aws_s3_bucket" "terraform-gen-files" {
+  bucket        = "terraform-gen-files"  
   force_destroy = true
 
   tags = {
@@ -114,6 +114,7 @@ resource "local_file" "dynamic_files" {
   content  = templatefile("${path.module}/templates/${each.value}.tftpl", {
     instances = aws_instance.main
   })
-  filename = startswith(each.key, "common_") ? "${path.module}/roles/common/files/${each.key}" : "${path.module}/${each.key}"
+  # filename = startswith(each.key, "common_") ? "${path.module}/roles/common/files/${each.key}" : "${path.module}/${each.key}"
+  filename = "${path.module}/${each.key}.s3" 
   depends_on = [ aws_instance.main ]
 }
