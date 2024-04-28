@@ -2,6 +2,9 @@
 # Contents the common steps to provision both k8s master and workers
 # Including the installation of kubernetes and dependencies, disabling swap, enabling needed kernel modules, etc.
 
+- name: Manage hostnames
+  ansible.builtin.import_tasks: hostnames.yml
+
 - name: Upgrade the system and install dependencies
   ansible.builtin.import_tasks: install_dependencies.yml
 
