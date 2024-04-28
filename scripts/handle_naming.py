@@ -21,6 +21,6 @@ def handle_naming():
             
             else: os.rename(unformatted_f[i], files[i]) 
 
-        except Exception as e: 
+        except OSError as e: 
             sys.stderr.write(f"fatal: Error when trying to rename the file '{files[i]}': '{e}'\n")
             sys.exit(400)

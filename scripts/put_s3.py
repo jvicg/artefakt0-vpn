@@ -4,7 +4,8 @@
 # // NOTE: Files created by Terraform will be named with the '.s3' extension allowing this script to locate the files
 # // NOTE: that need to be upload to the bucket
 
-import os, sys, boto3  # type: ignore
+import os, sys, boto3
+import boto3.exceptions  # type: ignore
 from handle_naming import handle_naming
 
 def main():
@@ -19,7 +20,7 @@ def main():
             s3.upload_file(file, bucket, file)  
             print(f"info: File '{file}' successfully uploaded to the bucket.")
 
-        except Exception as e:
+        except boto3.exceptions.ClientError as e:
             sys.stderr.write(f"fatal: Error when trying to upload the file '{file}': '{e}'\n")
             sys.exit(400)
     
