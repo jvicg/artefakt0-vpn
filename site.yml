@@ -13,3 +13,5 @@
   become: true
   roles:
     - master
+  tags:
+    - test

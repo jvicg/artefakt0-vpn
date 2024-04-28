@@ -1,5 +1,14 @@
 # master/vars/main.yml
 # Contains variables used on the role
 
-master_cidr: 172.24.0.0/16
-master_user: admin
+master_network:
+  name: 172.24.0.0
+  cidr: 172.24.0.0/16
+
+master_user:
+  name: k8scp
+  home: /home/k8scp
+
+master_url:
+  tigerator_operator: https://raw.githubusercontent.com/projectcalico/calico/v3.26.1/manifests/tigera-operator.yaml
+  custom_resources: https://raw.githubusercontent.com/projectcalico/calico/v3.26.1/manifests/custom-resources.yaml

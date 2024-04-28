@@ -6,3 +6,7 @@
 
 - name: Initialize the cluster
   ansible.builtin.import_tasks: init_kubeadm.yml
+
+- name: Download needed plugins
+  become_user: '{{ master_user.name }}'
+  ansible.builtin.import_tasks: get_plugins.yml

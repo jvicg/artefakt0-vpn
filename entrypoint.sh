@@ -11,6 +11,8 @@ cleanup() {
     if [ -n "$PROCESS_PID" ]; then
         kill -s SIGTERM "$PROCESS_PID"
     fi
+
+    handle_put_tfstate  # Upload state files to S3 before exiting
  
 	exit 1
 }
@@ -32,7 +34,7 @@ ex() {
 
 # Function to handle sharing of tfstate file between containers
 handle_put_tfstate() {
-    ./venv/bin/python3 scripts/put_s3.py
+    python3 scripts/put_s3.py
 
     if [ "$?" -ne 0 ]; then
         printf "fatal: Unable to upload terraform state to S3 bucket. Terminating instances...\n"
@@ -41,7 +43,8 @@ handle_put_tfstate() {
 }
 
 main() {
-    ./venv/bin/python3 scripts/get_s3.py 2>/dev/null      # Download the tfstate file from S3 bucket (if exists)
+    . ./venv/bin/activate                  # Activate python virtual environment
+    python3 scripts/get_s3.py 2>/dev/null  # Download the tfstate file from S3 bucket (if exists)
 
     # If the output from last command is equal to 0, means 
     # that the instances are already running 
@@ -51,9 +54,9 @@ main() {
 
     # Regular execution (no arguments received)
     else 
-        ex terraform apply -auto-approve && sleep 30      # Deploy the instances and wait to fully initialize
-        handle_put_tfstate                                # Upload tfstate file to S3 bucket
-        ex ./venv/bin/ansible-playbook site.yml
+        ex terraform apply -auto-approve       # Deploy the instances 
+        handle_put_tfstate && sleep 30         # Upload tfstate file to S3 bucket and wait for the instances to fully initialize
+        ex ansible-playbook site.yml
     fi
 
     printf "info: Entrypoint successfully executed. Deployer waiting for instructions...\n" 

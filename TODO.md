@@ -2,9 +2,10 @@
 
 ## TODO
 
+- Improve the way of obtaining home dir on get_pluging.yml
 - Finish Kubernetes installation on instances 
 - Activate python virtual environment on entrypoint.sh
-- Fix programs' version to ensure long term stability 
+- Choose fixed programs' version to ensure long term stability 
 
 - Add paths into variables on main.tf
 

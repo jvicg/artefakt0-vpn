@@ -114,7 +114,6 @@ resource "local_file" "dynamic_files" {
   content  = templatefile("${path.module}/templates/${each.value}.tftpl", {
     instances = aws_instance.main
   })
-  # filename = startswith(each.key, "common_") ? "${path.module}/roles/common/files/${each.key}" : "${path.module}/${each.key}"
-  filename = "${path.module}/${each.key}.s3" 
+  filename = "${path.module}/${each.key}.s3"  # The files will be named with '.s3' format
   depends_on = [ aws_instance.main ]
 }

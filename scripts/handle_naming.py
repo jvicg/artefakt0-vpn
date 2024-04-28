@@ -1,7 +1,6 @@
 #!/bin/python3
 # Script to handle the files created by Terraform. The script will be called by get_s3 and put_s3 after a successful execution
-# The files need to be renamed, removing the '.s3' of its name
-# and moving it to its proper directory.
+# The files need to be renamed, removing the '.s3' of its name and moving it to its proper directory.
 # e.g: if the file is needed by the rol 'common' it will  be moved to roles/common/files
 
 import os, sys

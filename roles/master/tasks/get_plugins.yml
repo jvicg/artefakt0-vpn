@@ -1,0 +1,18 @@
+# master/tasks/get_plugins.yml
+# Download the needed k8s plugins from internet
+
+- name: Download needed plugins
+  ansible.builtin.uri:
+    url: '{{ item.url }}'
+    dest: '{{ item.dest }}'
+    method: GET
+  loop:
+    - { url: '{{ master_url.tigerator_operator }}', dest: '{{ master_user.home }}/tigerator-operator.yml' }
+    - { url: '{{ master_url.custom_resources }}', dest: '{{ master_user.home }}/custom-resources.yml' }
+
+- name: Adjust content of custom-resources plugin
+  ansible.builtin.replace:
+    path: '{{ master_user.home }}/custom-resources.yml'
+    regexp: '^192\.168\.0\.0'
+    replace: '{{ master_network.name }}'
+    backup: true
