@@ -2,14 +2,9 @@
 
 ## TODO
 
-- **[!]** Provision with a different user than Ubuntu
-- Fix bug on get_s3
-- Improve the way of obtaining home dir on get_pluging.yml
 - Finish Kubernetes installation on instances 
-- Activate python virtual environment on entrypoint.sh
 - Choose fixed programs' version to ensure long term stability 
-
-- Add paths into variables on main.tf
+- Configure sudo password for the provisioner using ansible-vault 
 
 - Replace Makefile with a Python script:
     - Generate **aws_credentials** and **tf_credentials** with user input
@@ -23,10 +18,14 @@
 - **(?)** Adjust provision so it is adapted to different distros (Debian, OpenSUSE, Ubuntu): 
     - Using Ansible *when* statement
     - Adapt repositories to Distro and Distro's version
-    - Change default user on instances
 
 ## DONE 
 
+- Add paths into variables on main.tf
+- Activate python virtual environment on entrypoint.sh
+- Improve the way of obtaining home dir on get_plugins.yml
+- Provision with a different user than Ubuntu
+- Fix bug on get_s3
 - Change hostname to the instances
 - Upload/download inventory and hosts (and any other important file) from S3 bucket
 - Create custom module to initialize the cluster

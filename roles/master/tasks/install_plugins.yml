@@ -1,0 +1,8 @@
+# master/tasks/install_plugins.yml
+# This task will download and install the needed plugins by calling its respective tasks
+
+- name: Download the needed plugins
+  ansible.builtin.import_tasks: get_plugins.yml
+
+- name: Install the needed plugins
+  ansible.builtin.import_tasks: enable_plugins.yml

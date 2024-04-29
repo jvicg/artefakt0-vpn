@@ -47,7 +47,7 @@ RUN apk add --update --no-cache python3 openssl ca-certificates git zip sshpass 
     && pip install botocore boto3 ansible docker-py \
     && pip install --upgrade pycrypto pywinrm \
     && apk del build-dependencies \
-    && ansible-galaxy collection install community.kubernetes
+    && ansible-galaxy collection install community.kubernetes kubernetes.core
 
 COPY . .
 

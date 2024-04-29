@@ -32,7 +32,7 @@ locals {
     }
   }
 
-  dirs = {
+  paths = {
     templates = "${path.module}/templates"
   }
 }
@@ -55,7 +55,7 @@ resource "aws_instance" "main" {
     Name = "${count.index == 0 ? "k8scp" : "k8sworker${count.index - 1}"}"
   }
 
-  user_data = templatefile("${local.dirs.templates}/user_data.sh.tftpl", {
+  user_data = templatefile("${local.paths.templates}/user_data.sh.tftpl", {
     username   = local.vars.user,
     public_key = aws_key_pair.provisioner.public_key
   })
@@ -121,7 +121,7 @@ resource "aws_s3_bucket" "terraform-gen-files" {
 # Files generation
 resource "local_file" "dynamic_addresses" {  # inventory & hosts
   for_each = local.vars.generated_files
-  content  = templatefile("${local.dirs.templates}/${each.value}.tftpl", {
+  content  = templatefile("${local.paths.templates}/${each.value}.tftpl", {
     instances = aws_instance.main
   })
   filename = "${path.module}/${each.key}.s3"  # The files will be named with '.s3' format
@@ -129,7 +129,7 @@ resource "local_file" "dynamic_addresses" {  # inventory & hosts
 }
 
 resource "local_file" "ansible_cfg" {   # ansible.cfg
-  content  = templatefile("${local.dirs.templates}/ansible_cfg.tftpl", {
+  content  = templatefile("${local.paths.templates}/ansible_cfg.tftpl", {
     username = local.vars.user
   })
   filename = "${path.module}/ansible.cfg.s3"  

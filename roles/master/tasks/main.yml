@@ -4,5 +4,5 @@
 - name: Initialize the cluster
   ansible.builtin.import_tasks: init_kubeadm.yml
 
-- name: Download needed plugins
-  ansible.builtin.import_tasks: get_plugins.yml
+- name: Install the needed plugins
+  ansible.builtin.import_tasks: install_plugins.yml

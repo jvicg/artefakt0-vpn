@@ -7,12 +7,12 @@
     dest: '~{{ ansible_user }}/{{ item.dest }}'
     method: GET
   loop:
-    - { url: '{{ master_url.tigerator_operator }}', dest: 'tigerator-operator.yml' }
-    - { url: '{{ master_url.custom_resources }}', dest: 'custom-resources.yml' }
+    - { url: '{{ master_url.tigerator_operator }}', dest: '{{ master_plugins.tigerator_operator }}' }
+    - { url: '{{ master_url.custom_resources }}', dest: '{{ master_plugins.custom_resources }}' }
 
-- name: Adjust content of custom-resources plugin
+- name: Adjust content of custom-resources.yml plugin
   ansible.builtin.replace:
     path: '~{{ ansible_user }}/custom-resources.yml'
-    regexp: '^192\.168\.0\.0'
+    regexp: '192\.168\.0\.0'
     replace: '{{ master_network.name }}'
     backup: true

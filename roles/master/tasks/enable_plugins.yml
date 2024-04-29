@@ -1,0 +1,11 @@
+# master/tasks/enable_plugins.yml
+# Enable the needed network plugins for Kubernetes cluster to work
+
+- name: Enable the needed network plugins
+  kubernetes.core.k8s:
+    state: present
+    src: '~{{ ansible_user }}/{{ item }}'
+    kubeconfig: '~{{ ansible_user }}/.kube/config'
+  with_items:
+    - '{{ master_plugins.tigerator_operator }}'
+    - '{{ master_plugins.custom_resources }}'

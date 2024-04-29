@@ -8,3 +8,7 @@ master_network:
 master_url:
   tigerator_operator: https://raw.githubusercontent.com/projectcalico/calico/v3.26.1/manifests/tigera-operator.yaml
   custom_resources: https://raw.githubusercontent.com/projectcalico/calico/v3.26.1/manifests/custom-resources.yaml
+
+master_plugins:
+  tigerator_operator: tigerator-operator.yml
+  custom_resources: custom-resources.yml

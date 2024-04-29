@@ -11,5 +11,10 @@ run:
 
 deploy: build-img run
 
+entry:
+	docker run --rm -ti --name provisioner \
+		-v ./key:/provisioner/key \
+		a0/tf-ansible:v0.1.1 bash
+
 destroy:
 	docker exec provisioner terraform destroy -auto-approve

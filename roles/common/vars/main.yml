@@ -20,7 +20,10 @@ common_dependencies:
     - software-properties-common
 
   mod:  # Kernel modules needed by Kubernetes
-    - 'overlay'
-    - 'br_netfilter'
+    - overlay
+    - br_netfilter
+
+  py:  # Python packages
+    - kubernetes
 
 common_bucket: provisioner-bucket
