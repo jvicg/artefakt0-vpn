@@ -4,14 +4,10 @@
 
 - name: Run common provisioning on master and workers
   hosts: all
-  become: true
   roles:
     - common
 
 - name: Configure cluster on the master node
   hosts: master
-  become: true
   roles:
     - master
-  tags:
-    - test

@@ -21,6 +21,7 @@ provider "aws" {
 locals {
   vars = {
     ami              = "ami-0cd59ecaf368e5ccf"  # Ubuntu 20.04
+    user             = "provisioner"            # User responsible of the provision
     instance_type    = "t3.small"               # 2vCPU | 2GiB Mem
     instances_amount = "3"                      # Number of instances to be deployed
     region           = "us-east-1"              
@@ -49,6 +50,11 @@ resource "aws_instance" "main" {
   tags = {  # The first instance to be deployed will be the master node
     Name = "${count.index == 0 ? "k8scp" : "k8sworker${count.index - 1}"}"
   }
+
+  user_data = templatefile("${path.module}/templates/user_data.sh.tftpl", {
+    username   = local.vars.user,
+    public_key = aws_key_pair.provisioner.public_key
+  })
 
   depends_on = [
     aws_key_pair.provisioner,
@@ -109,11 +115,19 @@ resource "aws_s3_bucket" "terraform-gen-files" {
 }
 
 # Files generation
-resource "local_file" "dynamic_files" { 
+resource "local_file" "dynamic_files" {  # inventory & hosts
   for_each = local.vars.generated_files
   content  = templatefile("${path.module}/templates/${each.value}.tftpl", {
     instances = aws_instance.main
   })
   filename = "${path.module}/${each.key}.s3"  # The files will be named with '.s3' format
+  depends_on = [ aws_instance.main ]
+}
+
+resource "local_file" "ansible_cfg" {   # ansible.cfg
+  content  = templatefile("${path.module}/templates/ansible_cfg.tftpl", {
+    username = local.vars.user
+  })
+  filename = "${path.module}/ansible.cfg.s3"  
   depends_on = [ aws_instance.main ]
 }

@@ -1,0 +1,24 @@
+#!/bin/bash
+# Script to pre-provision the instances
+# It will simply create an user $USER that will be responsible for provision the instances
+# This will help to manage the instances no matter of the default user of the instance
+
+USER_HOME=/home/${username}
+USER_SSH_DIR=$USER_HOME/.ssh
+USER_PUB_KEY=$USER_SSH_DIR/authorized_keys
+
+if ! id ${username} &>/dev/null; then
+
+    useradd -m -s /bin/bash ${username}
+    usermod -aG sudo ${username}
+
+    mkdir $USER_SSH_DIR
+    chmod 700 $USER_SSH_DIR
+
+    touch $USER_PUB_KEY
+    chmod 600 $USER_PUB_KEY
+    echo "${public_key}" > $USER_PUB_KEY
+
+    chown -R ${username}:${username} $USER_SSH_DIR
+    echo "${username} ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+fi

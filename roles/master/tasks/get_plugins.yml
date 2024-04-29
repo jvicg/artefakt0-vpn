@@ -4,15 +4,15 @@
 - name: Download needed plugins
   ansible.builtin.uri:
     url: '{{ item.url }}'
-    dest: '{{ item.dest }}'
+    dest: '~{{ ansible_user }}/{{ item.dest }}'
     method: GET
   loop:
-    - { url: '{{ master_url.tigerator_operator }}', dest: '{{ master_user.home }}/tigerator-operator.yml' }
-    - { url: '{{ master_url.custom_resources }}', dest: '{{ master_user.home }}/custom-resources.yml' }
+    - { url: '{{ master_url.tigerator_operator }}', dest: 'tigerator-operator.yml' }
+    - { url: '{{ master_url.custom_resources }}', dest: 'custom-resources.yml' }
 
 - name: Adjust content of custom-resources plugin
   ansible.builtin.replace:
-    path: '{{ master_user.home }}/custom-resources.yml'
+    path: '~{{ ansible_user }}/custom-resources.yml'
     regexp: '^192\.168\.0\.0'
     replace: '{{ master_network.name }}'
     backup: true

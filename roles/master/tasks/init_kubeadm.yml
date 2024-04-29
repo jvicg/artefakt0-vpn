@@ -5,4 +5,4 @@
   k8s_init_cluster:
     master_ip: '{{ inventory_hostname }}'
     cidr_block: '{{ master_network.cidr }}'
-    user: '{{ master_user.name }}'
+    user: '{{ ansible_user }}'

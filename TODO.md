@@ -2,6 +2,7 @@
 
 ## TODO
 
+- **[!]** Provision with a different user than Ubuntu
 - Fix bug on get_s3
 - Improve the way of obtaining home dir on get_pluging.yml
 - Finish Kubernetes installation on instances 
