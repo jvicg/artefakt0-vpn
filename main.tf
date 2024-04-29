@@ -31,6 +31,10 @@ locals {
       common_hosts  = "k8s_hosts"
     }
   }
+
+  dirs = {
+    templates = "${path.module}/templates"
+  }
 }
 
 # Default VPC CIDR block (e.g: 172.31.10.0/16)
@@ -51,7 +55,7 @@ resource "aws_instance" "main" {
     Name = "${count.index == 0 ? "k8scp" : "k8sworker${count.index - 1}"}"
   }
 
-  user_data = templatefile("${path.module}/templates/user_data.sh.tftpl", {
+  user_data = templatefile("${local.dirs.templates}/user_data.sh.tftpl", {
     username   = local.vars.user,
     public_key = aws_key_pair.provisioner.public_key
   })
@@ -115,9 +119,9 @@ resource "aws_s3_bucket" "terraform-gen-files" {
 }
 
 # Files generation
-resource "local_file" "dynamic_files" {  # inventory & hosts
+resource "local_file" "dynamic_addresses" {  # inventory & hosts
   for_each = local.vars.generated_files
-  content  = templatefile("${path.module}/templates/${each.value}.tftpl", {
+  content  = templatefile("${local.dirs.templates}/${each.value}.tftpl", {
     instances = aws_instance.main
   })
   filename = "${path.module}/${each.key}.s3"  # The files will be named with '.s3' format
@@ -125,7 +129,7 @@ resource "local_file" "dynamic_files" {  # inventory & hosts
 }
 
 resource "local_file" "ansible_cfg" {   # ansible.cfg
-  content  = templatefile("${path.module}/templates/ansible_cfg.tftpl", {
+  content  = templatefile("${local.dirs.templates}/ansible_cfg.tftpl", {
     username = local.vars.user
   })
   filename = "${path.module}/ansible.cfg.s3"  
