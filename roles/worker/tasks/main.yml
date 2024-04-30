@@ -1,0 +1,6 @@
+# worker/tasks/main.yml
+# Add workers into the cluster
+
+- name: Check if the node was member of the cluster already
+  ansible.builtin.shell:
+    cmd: ls /etc/kubernetes/kubelet.conf
