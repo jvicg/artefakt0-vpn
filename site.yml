@@ -1,15 +1,15 @@
 # site.yml
 # Main orchestrator
 # This playbook will act as entrypoint of the provision
+---
+# - name: Configure cluster on the master node
+#   hosts: master
+#   roles:
+#     - common
+#     - master
 
-- name: Run common provisioning on master and workers
-  hosts: all
-  become: true
+- name: Configure cluster on the worker nodes
+  hosts: workers
   roles:
-    - common
-
-- name: Configure cluster on the master node
-  hosts: master
-  become: true
-  roles:
-    - master
+    # - common
+    - worker

@@ -1,0 +1,18 @@
+# worker/tasks/get_token.yml
+# Get the tokens of the cluster
+---
+- name: Get the cluster Token
+  ansible.builtin.command:
+    cmd: kubeadm token create
+  register: worker_token
+  changed_when: true
+
+- name: Get the Token Certificate Autorithy
+  ansible.builtin.shell:
+    cmd: |
+      set -o pipefail && openssl x509 -pubkey -in /etc/kubernetes/pki/ca.crt | \
+      openssl rsa -pubin -outform der 2>/dev/null | \
+      openssl dgst -sha256 -hex | sed 's/^.* //'
+    executable: /bin/bash
+  register: worker_token_ca
+  changed_when: true

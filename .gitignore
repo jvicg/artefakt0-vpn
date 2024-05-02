@@ -1,6 +1,11 @@
 .*
+venv
 *.old
 *key*
+inventory
+ansible.cfg
+*terraform*
 *__pycache__*
 *credentials*
+*common_hosts*
 !.dockerignore

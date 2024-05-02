@@ -29,7 +29,7 @@
   ansible.builtin.shell:
     cmd: set -o pipefail && containerd config default | tee /etc/containerd/config.toml
     executable: /bin/bash
-  changed_when: false
+  changed_when: true
 
 - name: Enable containerd service
   ansible.builtin.service:

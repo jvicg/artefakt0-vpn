@@ -1,0 +1,14 @@
+# worker/tasks/main.yml
+# Add the worker into the node
+---
+- name: Get the cluster tokens
+  ansible.builtin.import_tasks: get_tokens.yml
+  delegate_to: '{{ worker_cp_hostname }}'
+
+- name: Join worker into the node
+  ansible.builtin.shell: |
+    kubeadm join \
+      '{{ worker_cp_hostname }}':'{{ worker_cp_port }}' \
+      --token '{{ worker_token.stdout }}' \
+      --discovery-token-ca-cert-hash sha256:'{{ worker_token_ca.stdout }}'
+  changed_when: true

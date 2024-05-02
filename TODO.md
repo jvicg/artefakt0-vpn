@@ -5,6 +5,8 @@
 - Finish Kubernetes installation on instances 
 - Choose fixed programs' version to ensure long term stability 
 - Configure sudo password for the provisioner using ansible-vault 
+- Include port into variables on Terraform
+- Add sysctl reload into a handler on common role
 
 - Replace Makefile with a Python script:
     - Generate **aws_credentials** and **tf_credentials** with user input
@@ -21,6 +23,7 @@
 
 ## DONE 
 
+- Fix bug when activating virtual environment on entrypoint
 - Add paths into variables on main.tf
 - Activate python virtual environment on entrypoint.sh
 - Improve the way of obtaining home dir on get_plugins.yml

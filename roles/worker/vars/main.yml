@@ -1,2 +1,5 @@
 # worker/vars/main.yml
 # Contains variables used on the role
+---
+worker_cp_hostname: '{{ hostvars.[groups["master"][0]].ansible_host }}'
+worker_cp_port: 6443

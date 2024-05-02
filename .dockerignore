@@ -1,5 +1,6 @@
 .*
 *.md
+*venv*
 LICENSE
 Makefile
 Dockerfile

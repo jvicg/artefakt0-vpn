@@ -4,8 +4,7 @@
 # // NOTE: Files created by Terraform will be named with the '.s3' extension allowing this script to locate the files
 # // NOTE: that need to be upload to the bucket
 
-import os, sys, boto3
-import boto3.exceptions  # type: ignore
+import os, sys, boto3  # type: ignore
 from handle_naming import handle_naming
 
 def main():

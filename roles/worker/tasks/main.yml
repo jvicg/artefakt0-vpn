@@ -1,6 +1,10 @@
 # worker/tasks/main.yml
-# Add workers into the cluster
+# Add the worker into the node
+---
+- name: Check if the node is member of the cluster
+  ansible.builtin.import_tasks: check_member.yml
+  delegate_to: '{{ worker_cp_hostname }}'
 
-- name: Check if the node was member of the cluster already
-  ansible.builtin.shell:
-    cmd: ls /etc/kubernetes/kubelet.conf
+- name: Join the node into the cluster
+  ansible.builtin.import_tasks: join_node.yml
+  when: worker_is_member.rc != 0
