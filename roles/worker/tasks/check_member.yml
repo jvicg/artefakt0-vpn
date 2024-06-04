@@ -1,8 +1,17 @@
 # worker/tasks/check_member.yml
 ---
+- name: Obtain the information of the cluster
+  kubernetes.core.k8s_info:
+    api_version: v1
+    kubeconfig: ~{{ ansible_user }}/.kube/config
+    kind: Node
+  register: nodes_info
+  delegate_to: '{{ worker_cp_hostname }}'
+
 - name: Check if the node is member of the cluster
-  ansible.builtin.shell:
-    cmd: set -o pipefail && kubectl get-nodes | grep '{{ inventory_hostname }}'
-    executable: /bin/bash
-  register: worker_is_member
-  changed_when: false
+  set_fact:
+    worker_is_member: true
+  loop: "{{ nodes_info.resources }}"
+  loop_control:
+    loop_var: node_info
+  when: "ansible_hostname in node_info.metadata.name"

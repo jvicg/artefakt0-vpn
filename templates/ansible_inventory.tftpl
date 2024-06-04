@@ -3,6 +3,10 @@
 [master]
 ${instances[0].tags.Name} ansible_host=${instances[0].public_dns}
 
+[master:vars]
+master_hostname=${instances[0].tags.Name} 
+cluster_port=6443
+
 [workers]
 %{ for i, instance in instances ~}
 %{ if i != 0 }

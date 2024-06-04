@@ -3,8 +3,16 @@
 ---
 - name: Check if the node is member of the cluster
   ansible.builtin.import_tasks: check_member.yml
+  changed_when: false
+
+- name: Get the authentication tokens
+  ansible.builtin.import_tasks: get_tokens.yml
+  when: "worker_is_member is not defined or not worker_is_member"
   delegate_to: '{{ worker_cp_hostname }}'
 
-- name: Join the node into the cluster
-  ansible.builtin.import_tasks: join_node.yml
-  when: worker_is_member.rc != 0
+- name: Test the value of the inventory variables
+  debug:
+    # msg: "The name of the master node is: {{ groups.master[0] }}"
+    var: hostvars
+  tags:
+    - testing

@@ -2,11 +2,12 @@
 # Main orchestrator
 # This playbook will act as entrypoint of the provision
 ---
-# - name: Configure cluster on the master node
-#   hosts: master
-#   roles:
-#     - common
-#     - master
+- name: Configure cluster on the master node
+  hosts: master
+  roles:
+    # - common
+    - master
+  gather_facts: false
 
 - name: Configure cluster on the worker nodes
   hosts: workers

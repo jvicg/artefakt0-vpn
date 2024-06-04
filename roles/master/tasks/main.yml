@@ -4,5 +4,8 @@
 - name: Initialize the cluster
   ansible.builtin.import_tasks: init_kubeadm.yml
 
+- name: Register the Certificate Authority of the cluster
+  ansible.builtin.import_tasks: get_cert.yml
+
 - name: Install the needed plugins
   ansible.builtin.import_tasks: install_plugins.yml

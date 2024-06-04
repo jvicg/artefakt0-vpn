@@ -2,6 +2,8 @@
 
 ## TODO
 
+- Export terraform vars into a different file
+- Check internet connection in the entrypoint
 - Finish Kubernetes installation on instances 
 - Choose fixed programs' version to ensure long term stability 
 - Configure sudo password for the provisioner using ansible-vault 

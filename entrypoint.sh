@@ -54,14 +54,14 @@ main() {
 
     # Regular execution (no arguments received)
     else 
-        ex terraform apply -auto-approve       # Deploy the instances 
-        handle_put_tfstate && sleep 30         # Upload tfstate file to S3 bucket and wait for the instances to fully initialize
-        ex ansible-playbook site.yml
+        # ex terraform apply -auto-approve       # Deploy the instances 
+        handle_put_tfstate # && sleep 30         # Upload tfstate file to S3 bucket and wait for the instances to fully initialize
+        ex ansible-playbook site.yml -t testing
     fi
 
     printf "info: Entrypoint successfully executed. Deployer waiting for instructions...\n" 
 
-    exec bash
+    # exec bash
 }
 
 main "$@"
